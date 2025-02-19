@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
+import AdminBookings from "@/views/admin/AdminBookings.vue";
+import AdminSpaces from "@/views/admin/AdminSpaces.vue";
+import AdminAddSpace from "@/views/admin/AdminAddSpace.vue";
+import AdminHistory from "@/views/admin/AdminHistory.vue";
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -9,11 +12,6 @@ const router = createRouter({
     routes: [
         {
             path: '/',
-            name: 'home',
-            component: HomeView
-        },
-        {
-            path: '/login',
             name: 'login',
             component: LoginView
         },
@@ -21,6 +19,26 @@ const router = createRouter({
             path: '/signup',
             name: 'signup',
             component: SignupView
+        },
+        {
+            path: '/admin/bookings',
+            name: 'admin-bookings',
+            component: AdminBookings
+        },
+        {
+            path: '/admin/spaces',
+            name: 'admin-spaces',
+            component: AdminSpaces
+        },
+        {
+            path: '/admin/spaces/add',
+            name: 'admin-add-space',
+            component: AdminAddSpace
+        },
+        {
+            path: '/admin/history',
+            name: 'admin-history',
+            component: AdminHistory
         }
     ]
 })

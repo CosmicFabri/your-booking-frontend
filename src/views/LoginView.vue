@@ -1,4 +1,22 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+import { ref, reactive } from 'vue';
+
+const auth = useAuthStore()
+const form = reactive({
+    email: '',
+    password: ''
+})
+
+const submitLogin = async () => {
+    try {
+        const data = auth.login(form.email, form.password)
+        console.log(data)
+    } catch (error) {
+
+    }
+}
+
 </script>
 
 <template>
@@ -47,17 +65,17 @@
                 class="max-w-3xl xl:text-2xl text-lg p-6 mx-12 border-gray-300 border-2 border-solid rounded-xl shadow-xl bg-gray-100">
                 <h2 class="text-center text-2xl font-bold text-gray-700 mb-6">Log In</h2>
 
-                <form class="flex flex-col gap-y-4">
+                <form @submit.prevent="submitLogin" class="flex flex-col gap-y-4">
                     <div class="flex flex-col">
                         <label for="email" class="text-gray-700 font-medium">Email:</label>
-                        <input type="email" id="email" name="email"
+                        <input v-model="form.email" type="email" id="email" name="email"
                             class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
                             placeholder="Enter your email" required>
                     </div>
 
                     <div class="flex flex-col">
                         <label for="password" class="text-gray-700 font-medium">Password:</label>
-                        <input type="password" id="password" name="password"
+                        <input v-model="form.password" type="password" id="password" name="password"
                             class="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-sky-400"
                             placeholder="Enter your password" required>
                     </div>

@@ -2,6 +2,33 @@
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import SpaceRow from '@/components/admin/SpaceRow.vue';
 import Button from '@/components/Button.vue';
+
+const spaces = [
+    {
+        name: 'CIC-2',
+        description: 'Sala 2 del CIC',
+        capacity: 50,
+        disponibility: '11:00 - 13:00'
+    },
+    {
+        name: 'CIC-3',
+        description: 'Sala 3 del CIC',
+        capacity: 45,
+        disponibility: '09:00 - 11:00'
+    },
+    {
+        name: 'ACT',
+        description: 'Sala de Actos',
+        capacity: 80,
+        disponibility: '11:00 - 13:00'
+    },
+    {
+        name: 'DID',
+        description: 'Sala Didáctica',
+        capacity: 50,
+        disponibility: '13:00 - 15:00'
+    }
+]
 </script>
 
 <template>
@@ -18,11 +45,11 @@ import Button from '@/components/Button.vue';
             <!-- Table -->
             <div class="flex flex-col">
                 <!-- Table header -->
-                <div class="flex flex-row">
-                    <div class="px-4 py-2 w-52 bg-sky-200 border-2 border-black font-semibold">Nombre</div>
-                    <div class="px-4 py-2 w-52 bg-sky-200 border-2 border-black font-semibold">Descripción</div>
-                    <div class="px-4 py-2 w-52 bg-sky-200 border-2 border-black font-semibold">Cantidad</div>
-                    <div class="px-4 py-2 w-52 bg-sky-200 border-2 border-black font-semibold">Disponibilidad</div>
+                <div class="flex flex-row bg-sky-300 text-gray-800 font-semibold border border-sky-600">
+                    <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Nombre</div>
+                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Descripción</div>
+                    <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Capacidad</div>
+                    <div class="px-4 py-3 w-52 text-center">Disponibilidad</div>
                 </div>
 
                 <!-- Table contents -->

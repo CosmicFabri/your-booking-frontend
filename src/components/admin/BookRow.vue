@@ -1,19 +1,25 @@
 <script setup>
-import { defineProps } from 'vue';
+import { defineProps, computed } from 'vue';
 
 const props = defineProps({
     bookNumber: Number,
     bookSpace: String,
     bookUser: String,
-    bookSchedule: String
+    bookSchedule: String,
+    index: Number // For alternating row colors
 })
+
+const isEven = computed(() => props.index % 2 === 0)
 </script>
 
 <template>
-    <div class="flex flex-row">
-        <div class="px-4 py-2 w-52 border-2 border-black">{{ props.bookNumber }}</div>
-        <div class="px-4 py-2 w-52 border-2 border-black">{{ props.bookSpace }}</div>
-        <div class="px-4 py-2 w-52 border-2 border-black">{{ props.bookUser }}</div>
-        <div class="px-4 py-2 w-52 border-2 border-black">{{ props.bookSchedule }}</div>
+    <div 
+        class="flex flex-row border border-gray-300"
+        :class="isEven ? 'bg-gray-100' : 'bg-white'"
+    >
+        <div class="px-4 py-2 w-12 border-r border-gray-300 text-center">{{ props.bookNumber }}</div>
+        <div class="px-4 py-2 w-28 border-r border-gray-300 text-center">{{ props.bookSpace }}</div>
+        <div class="px-4 py-2 w-48 border-r border-gray-300 text-center">{{ props.bookUser }}</div>
+        <div class="px-4 py-2 w-36 text-center">{{ props.bookSchedule }}</div>
     </div>
 </template>

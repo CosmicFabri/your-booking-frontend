@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, useRoute } from 'vue-router';
+import Button from '../Button.vue';
 
 const isActiveLink = (routePath) => {
     const route = useRoute() // Current route path we're in
@@ -11,14 +12,18 @@ const isActiveLink = (routePath) => {
     <div class="flex flex-col pl-6 pr-12 py-8 bg-gray-200 justify-between w-48 h-[calc(100vh-7rem)] shadow-xl">
         <div class="flex flex-col gap-y-4">
             <RouterLink :class="[isActiveLink('/admin/bookings') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
-                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/bookings">Bookings</RouterLink>
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/bookings">Reservas</RouterLink>
             <RouterLink :class="[isActiveLink('/admin/spaces') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
-                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/spaces">Spaces</RouterLink>
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/spaces">Espacios</RouterLink>
             <RouterLink :class="[isActiveLink('/admin/history') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
-                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/history">History</RouterLink>
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/history">Historial</RouterLink>
         </div>
-        <div>
-            <RouterLink class="hover:underline p-4" to="/">Log out</RouterLink>
+        <div class="p-4">
+            <Button
+                :text="'Salir'"
+                :to="'/'"
+                :font-size="'2xl'"
+            ></Button>
         </div>
     </div>
 </template>

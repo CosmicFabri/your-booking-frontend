@@ -4,15 +4,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE
 
 async function fetchData(url, method = 'GET', options) {
     try {
-        const response = fetch(`${API_BASE_URL}/${url}`, {
+        const response = await fetch(`${API_BASE_URL}/${url}`, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'application/json',
                 ...options.headers    
             },
-            body: {
+            body: JSON.stringify({
                 ...options.body
-            }
+            })
         })
 
         if(!response.ok) {

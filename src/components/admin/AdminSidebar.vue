@@ -23,6 +23,7 @@ const isActiveLink = (routePath) => {
                 :text="'Salir'"
                 :to="'/'"
                 :font-size="'2xl'"
+                :color="'red'"
             ></Button>
         </div>
     </div>

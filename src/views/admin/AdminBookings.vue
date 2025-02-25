@@ -1,9 +1,11 @@
 <script setup>
+import { ref } from 'vue';
+
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import FullCalendar from '@/components/FullCalendar.vue';
 import BookRow from '@/components/admin/BookRow.vue';
 
-const bookings = [
+const bookings = ref([
     {
         number: 1,
         space: 'CIC-1',
@@ -16,7 +18,7 @@ const bookings = [
         user: 'Justino Ramírez Ortegón',
         schedule: '11:00 - 13:00',
     }
-]
+])
 </script>
 
     <template>

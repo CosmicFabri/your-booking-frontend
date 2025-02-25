@@ -17,7 +17,7 @@ const isEven = computed(() => props.index % 2 === 0)
         class="flex flex-row border border-gray-300"
         :class="isEven ? 'bg-gray-100' : 'bg-white'"
     >
-        <div class="px-4 py-2 w-12 border-r border-gray-300 text-center">{{ props.bookNumber }}</div>
+        <div class="px-4 py-2 w-24 border-r border-gray-300 text-center">{{ props.bookNumber }}</div>
         <div class="px-4 py-2 w-28 border-r border-gray-300 text-center">{{ props.bookSpace }}</div>
         <div class="px-4 py-2 w-48 border-r border-gray-300 text-center">{{ props.bookUser }}</div>
         <div class="px-4 py-2 w-36 text-center">{{ props.bookSchedule }}</div>

@@ -27,12 +27,13 @@ const bookings = ref([
             <AdminSidebar></AdminSidebar>
 
             <!-- Main view -->
-            <div class="flex flex-col flex-1 px-24 pt-16 gap-y-8">
+            <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
 
                 <!-- Title -->
-                <div class="text-3xl font-semibold">Reservas</div>
+                <div class="text-3xl font-semibold">Reservaciones</div>
 
-                <div class="flex flex-row flex-1 justify-center gap-x-16">
+                <div class="flex flex-row flex-1 justify-center gap-x-20">
+                    
                     <!-- Bookings calendar -->
                     <div class="flex-2 min-w-[500px] max-w-[800px]">
                         <FullCalendar></FullCalendar>

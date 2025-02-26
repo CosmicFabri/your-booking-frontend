@@ -51,12 +51,12 @@ const closeModal = () => {
         <AdminSidebar></AdminSidebar>
 
         <!-- Main view -->
-        <div class="flex flex-col px-24 py-16 gap-y-12">
+        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
             <!-- Title -->
             <div class="text-3xl font-semibold">Espacios</div>
 
             <!-- Table -->
-            <div class="flex flex-col">
+            <div class="flex flex-col justify-center mx-auto">
                 <!-- Table header -->
                 <div class="flex flex-row bg-sky-300 text-gray-800 font-semibold border border-sky-600">
                     <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Nombre</div>

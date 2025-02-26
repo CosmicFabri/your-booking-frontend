@@ -1,0 +1,53 @@
+{
+    "bookings":
+    [
+        {
+            "number": 1,
+            "space": "CIC-1",
+            "user": "José Aguilar Canepa",
+            "schedule": "09:00 - 11:00"
+        },
+        {
+            "number": 2,
+            "space": "CIC-2",
+            "user": "Justino Ramírez Ortegón",
+            "schedule": "11:00 - 13:00"
+        },
+        {
+            "number": 3,
+            "space": "CIC-1",
+            "user": "José Aguilar Canepa",
+            "schedule": "09:00 - 11:00"
+        },
+        {
+            "number": 4,
+            "space": "CIC-2",
+            "user": "Justino Ramírez Ortegón",
+            "schedule": "11:00 - 13:00"
+        },
+        {
+            "number": 5,
+            "space": "CIC-1",
+            "user": "José Aguilar Canepa",
+            "schedule": "09:00 - 11:00"
+        },
+        {
+            "number": 6,
+            "space": "CIC-2",
+            "user": "Justino Ramírez Ortegón",
+            "schedule": "11:00 - 13:00"
+        },
+        {
+            "number": 7,
+            "space": "CIC-1",
+            "user": "José Aguilar Canepa",
+            "schedule": "09:00 - 11:00"
+        },
+        {
+            "number": 8,
+            "space": "CIC-2",
+            "user": "Justino Ramírez Ortegón",
+            "schedule": "11:00 - 13:00"
+        }
+    ]
+}

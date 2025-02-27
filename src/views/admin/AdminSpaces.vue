@@ -1,39 +1,15 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import SpaceRow from '@/components/admin/SpaceRow.vue';
 import Button from '@/components/Button.vue';
 
-const spaces = ref([
-    {
-        name: 'CIC-2',
-        description: 'Sala 2 del CIC',
-        capacity: 50,
-        disponibility: '11:00 - 13:00'
-    },
-    {
-        name: 'CIC-3',
-        description: 'Sala 3 del CIC',
-        capacity: 45,
-        disponibility: '09:00 - 11:00'
-    },
-    {
-        name: 'ACT',
-        description: 'Sala de Actos',
-        capacity: 80,
-        disponibility: '11:00 - 13:00'
-    },
-    {
-        name: 'DID',
-        description: 'Sala Didáctica',
-        capacity: 50,
-        disponibility: '13:00 - 15:00'
-    }
-])
-
 // The state of our modal
 const open = ref(false)
+
+// Spaces we're gonna be fetching
+const spaces = ref([])
 
 const toggleModal = () => {
     open.value = true
@@ -43,6 +19,31 @@ const toggleModal = () => {
 const closeModal = () => {
     open.value = false;
 }
+
+const deleteSpace = async (id) => {
+    try {
+        const response = await fetch(`http://localhost:5000/spaces/${id}`,
+            { method: 'DELETE' })
+    } catch (error) {
+        console.error(`Error deleting space with id ${id}`, error)
+    }
+}
+
+onMounted(async () => {
+    try {
+        const response = await fetch('http://localhost:5000/spaces')
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`)
+        }
+    
+        const json = await response.json()
+        const jsonStr  = JSON.stringify(json)
+    
+        spaces.value = JSON.parse(jsonStr)
+    } catch (error) {
+        console.error('Error fetching spaces', error)
+    }
+})
 </script>
 
 <template>
@@ -62,23 +63,37 @@ const closeModal = () => {
                     <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Nombre</div>
                     <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Descripción</div>
                     <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Capacidad</div>
-                    <div class="px-4 py-3 w-52 text-center">Disponibilidad</div>
+                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Disponibilidad</div>
                 </div>
 
                 <!-- Table contents -->
-                <SpaceRow
+                <div
                     v-for="(space, index) in spaces"
                     :key="space.id"
-                    :space-name="space.name"
-                    :space-description="space.description"
-                    :space-capacity="space.capacity"
-                    :space-disponibility="space.disponibility"
                     :index="index"
-                />
+                    class="flex flex-row gap-x-8 relative">
+
+                    <SpaceRow
+                        :space-name="space.name"
+                        :space-description="space.description"
+                        :space-capacity="space.capacity"
+                        :space-disponibility="space.disponibility"
+                    />
+
+                    <button
+                        @click="deleteSpace(space.id)"
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-2
+                        rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 
+                        absolute -right-32"
+                    >
+                        <i class="pi pi-trash text-white text-lg"></i>
+                        <span>Eliminar</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Button to add a space -->
-            <div class="flex justify-end">
+            <div class="flex justify-end mx-64">
                 <Button @click="toggleModal" :text="'Añadir espacio'"></Button>
             </div>
         </div>

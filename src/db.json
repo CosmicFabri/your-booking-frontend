@@ -1,0 +1,83 @@
+{
+  "bookings": [
+    {
+      "number": 1,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "schedule": "09:00 - 11:00",
+      "id": "8e55"
+    },
+    {
+      "number": 2,
+      "space": "CIC-2",
+      "user": "Justino Ramírez Ortegón",
+      "schedule": "11:00 - 13:00",
+      "id": "26a6"
+    },
+    {
+      "number": 3,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "schedule": "09:00 - 11:00",
+      "id": "019f"
+    },
+    {
+      "number": 4,
+      "space": "CIC-2",
+      "user": "Justino Ramírez Ortegón",
+      "schedule": "11:00 - 13:00",
+      "id": "0ae6"
+    },
+    {
+      "number": 5,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "schedule": "09:00 - 11:00",
+      "id": "3cfe"
+    },
+    {
+      "number": 6,
+      "space": "CIC-2",
+      "user": "Justino Ramírez Ortegón",
+      "schedule": "11:00 - 13:00",
+      "id": "800d"
+    },
+    {
+      "number": 7,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "schedule": "09:00 - 11:00",
+      "id": "18ac"
+    },
+    {
+      "number": 8,
+      "space": "CIC-2",
+      "user": "Justino Ramírez Ortegón",
+      "schedule": "11:00 - 13:00",
+      "id": "b663"
+    }
+  ],
+  "spaces": [
+    {
+      "id": "1",
+      "name": "CIC-1",
+      "description": "Sala 1 del CIC",
+      "capacity": 50,
+      "disponibility": "13:00 - 15:00"
+    },
+    {
+      "id": "2",
+      "name": "CIC-2",
+      "description": "Sala 2 del CIC",
+      "capacity": 45,
+      "disponibility": "09:00 - 11:00"
+    },
+    {
+      "id": "3",
+      "name": "ACT",
+      "description": "Sala de Actos",
+      "capacity": 90,
+      "disponibility": "11:00 - 13:00"
+    }
+  ]
+}

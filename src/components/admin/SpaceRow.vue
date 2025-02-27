@@ -20,6 +20,6 @@ const isEven = computed(() => props.index % 2 === 0)
         <div class="px-4 py-2 w-32 border-r border-gray-300 text-center">{{ props.spaceName }}</div>
         <div class="px-4 py-2 w-52 border-r border-gray-300 text-center">{{ props.spaceDescription }}</div>
         <div class="px-4 py-2 w-32 border-r border-gray-300 text-center">{{ props.spaceCapacity }}</div>
-        <div class="px-4 py-2 w-52 text-center">{{ props.spaceDisponibility }}</div>
+        <div class="px-4 py-2 w-48 text-center">{{ props.spaceDisponibility }}</div>
     </div>
 </template>

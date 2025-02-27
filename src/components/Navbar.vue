@@ -3,7 +3,7 @@ import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-    <div class="relative bg-sky-200 xl:px-24 px-10 py-4 z-50 flex flex-row items-center shadow-xl justify-between">
+    <div class="relative bg-sky-200 xl:px-24 px-10 py-4 flex flex-row items-center shadow-xl justify-between">
         <!-- Logo image and app name -->
         <div class="flex-1 flex flex-row gap-x-4 items-center">
             <RouterLink to="/">

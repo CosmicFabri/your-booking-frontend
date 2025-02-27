@@ -38,6 +38,50 @@ const closeDeleteModal = () => {
     selectedSpaceId.value = null
 }
 
+const form = ref({
+    id: totalRows.value,
+    name: '',
+    description: '',
+    capacity: 0,
+    availability: {
+        from: '08:00',
+        to: '17:00'
+    }
+})
+
+const handleSubmit = async () => {
+    const newSpace = {
+        id: totalRows.value ? totalRows.value + 1 : 1, // Ensure ID is unique
+        name: form.value.name,
+        description: form.value.description,
+        capacity: form.value.capacity,
+        availability: {
+            from: form.value.availability.from,
+            to: form.value.availability.to,
+        }
+    }
+
+    try {
+        const response = await fetch('http://localhost:5000/spaces', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newSpace)
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`)
+        }
+
+        console.log(await response.json());
+        
+        totalRows.value++
+        await fetchSpaces() // Refresh the list after adding a space
+        closeAddModal() // Close the modal
+    } catch (error) {
+        console.error('Error posting new space', error);
+    }
+}
+
 const deleteSpace = async (id) => {
     try {
         const response = await fetch(`http://localhost:5000/spaces/${id}`,
@@ -105,7 +149,7 @@ onMounted(fetchSpaces);
                         :space-name="space.name"
                         :space-description="space.description"
                         :space-capacity="space.capacity"
-                        :space-disponibility="space.disponibility"
+                        :space-disponibility="`${space.availability.from} - ${space.availability.to}`"
                         :index="index"
                         class="relative"
                     />
@@ -139,45 +183,44 @@ onMounted(fetchSpaces);
             <div class="text-2xl font-semibold text-center mb-4">Añadir un espacio</div>
 
             <!-- Form -->
-            <form class="flex flex-col gap-y-4">
+            <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-4">
                 <div class="flex flex-col">
                     <label for="name" class="font-medium">Nombre:</label>
-                    <input type="text" id="name" name="name" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                    <input v-model="form.name" type="text" id="name" name="name" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                 </div>
 
                 <div class="flex flex-col">
                     <label for="description" class="font-medium">Descripción:</label>
-                    <input type="text" id="description" name="description" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                    <input v-model="form.description" type="text" id="description" name="description" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                 </div>
 
                 <div class="flex flex-col">
                     <label for="capacity" class="font-medium">Capacidad:</label>
-                    <input type="number" id="capacity" name="capacity" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                    <input v-model="form.capacity" type="number" id="capacity" name="capacity" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                 </div>
 
                 <div class="flex flex-col">
                     <span class="font-medium">Disponibilidad:</span>
                     <div class="flex items-center gap-x-2">
                         <label for="from">De:</label>
-                        <select id="from" name="from" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                        <select v-model="form.availability.from" id="from" name="from" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
                             <option>08:00</option>
                             <option>09:00</option>
                             <option>10:00</option>
                         </select>
                         <label for="to">A:</label>
-                        <select id="to" name="to" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                        <select v-model="form.availability.to" id="to" name="to" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
                             <option>17:00</option>
                             <option>18:00</option>
                             <option>19:00</option>
                         </select>
                     </div>
                 </div>
-            </form>
 
-            <!-- Button -->
-            <div class="flex justify-end mt-4">
-                <Button :to="'/admin/spaces'" :text="'Añadir espacio'"></Button>
-            </div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                    Añadir espacio
+                </button>
+            </form>
         </div>
     </div>
 

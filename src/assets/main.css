@@ -1,3 +1,11 @@
+@import "primeicons/primeicons.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --p-primary-500: #0ea5e9; /* Sky-500 */
+    --p-primary-600: #0284c7; /* Sky-600 */
+    --p-primary-700: #0369a1; /* Sky-700 */
+}

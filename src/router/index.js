@@ -4,7 +4,6 @@ import LoginView from "@/views/LoginView.vue";
 import SignupView from "@/views/SignupView.vue";
 import AdminBookings from "@/views/admin/AdminBookings.vue";
 import AdminSpaces from "@/views/admin/AdminSpaces.vue";
-import AdminAddSpace from "@/views/admin/AdminAddSpace.vue";
 import AdminHistory from "@/views/admin/AdminHistory.vue";
 
 const router = createRouter({
@@ -32,11 +31,6 @@ const router = createRouter({
             path: '/admin/spaces',
             name: 'admin-spaces',
             component: AdminSpaces
-        },
-        {
-            path: '/admin/spaces/add',
-            name: 'admin-add-space',
-            component: AdminAddSpace
         },
         {
             path: '/admin/history',

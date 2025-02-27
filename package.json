@@ -10,6 +10,7 @@
     "server": "json-server --watch src/db.json --port 5000"
   },
   "dependencies": {
+    "pinia": "^3.0.1",
     "@fullcalendar/core": "^6.1.15",
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",

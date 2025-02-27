@@ -4,6 +4,7 @@
       "number": 1,
       "space": "CIC-1",
       "user": "José Aguilar Canepa",
+      "date": "27-02-2025",
       "schedule": "09:00 - 11:00",
       "id": "8e55"
     },
@@ -11,6 +12,7 @@
       "number": 2,
       "space": "CIC-2",
       "user": "Justino Ramírez Ortegón",
+      "date": "27-02-2025",
       "schedule": "11:00 - 13:00",
       "id": "26a6"
     },
@@ -18,6 +20,7 @@
       "number": 3,
       "space": "CIC-1",
       "user": "José Aguilar Canepa",
+      "date": "28-02-2025",
       "schedule": "09:00 - 11:00",
       "id": "019f"
     },
@@ -25,6 +28,7 @@
       "number": 4,
       "space": "CIC-2",
       "user": "Justino Ramírez Ortegón",
+      "date": "28-02-2025",
       "schedule": "11:00 - 13:00",
       "id": "0ae6"
     },
@@ -32,6 +36,7 @@
       "number": 5,
       "space": "CIC-1",
       "user": "José Aguilar Canepa",
+      "date": "01-03-2025",
       "schedule": "09:00 - 11:00",
       "id": "3cfe"
     },
@@ -39,6 +44,7 @@
       "number": 6,
       "space": "CIC-2",
       "user": "Justino Ramírez Ortegón",
+      "date": "01-03-2025",
       "schedule": "11:00 - 13:00",
       "id": "800d"
     },
@@ -46,6 +52,7 @@
       "number": 7,
       "space": "CIC-1",
       "user": "José Aguilar Canepa",
+      "date": "02-03-2025",
       "schedule": "09:00 - 11:00",
       "id": "18ac"
     },
@@ -53,6 +60,7 @@
       "number": 8,
       "space": "CIC-2",
       "user": "Justino Ramírez Ortegón",
+      "date": "02-03-2025",
       "schedule": "11:00 - 13:00",
       "id": "b663"
     }

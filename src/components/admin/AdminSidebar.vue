@@ -9,8 +9,11 @@ const isActiveLink = (routePath) => {
 </script>
 
 <template>
-    <div class="flex flex-col pl-6 pr-12 py-8 bg-gray-200 justify-between w-48 h-[calc(100vh-7rem)] shadow-xl">
-        <div class="flex flex-col gap-y-4">
+    <div class="flex flex-col pl-6 pr-12 py-8 bg-gray-200 justify-between w-48 h-[calc(100vh-7rem)] shadow-xl relative">
+        <div class="absolute text-xl font-semibold text-sky-600">
+            Administrador
+        </div>
+        <div class="flex flex-col gap-y-4 mt-12">
             <RouterLink :class="[isActiveLink('/admin/bookings') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
                 'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/bookings">Reservas</RouterLink>
             <RouterLink :class="[isActiveLink('/admin/spaces') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',

@@ -57,6 +57,7 @@ onMounted(async () => {
                     <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
                     <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Espacio</div>
                     <div class="px-4 py-3 w-72 border-r border-sky-600 text-center">Usuario</div>
+                    <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Fecha</div>
                     <div class="px-4 py-3 w-48 text-center">Horario</div>
                 </div>
 
@@ -68,6 +69,7 @@ onMounted(async () => {
                     :book-number="booking.number"
                     :book-space="booking.space"
                     :book-user="booking.user"
+                    :book-date="booking.date"
                     :book-schedule="booking.schedule"
                     :cell-width="32"
                     :index="index"

@@ -10,11 +10,13 @@ const bookings = ref([
         number: 1,
         space: 'CIC-1',
         user: 'José Aguilar Canepa',
+        date: "27-02-2025",
         schedule: '09:00 - 11:00',
     },
     {
         number: 2,
         space: 'CIC-2',
+        date: "28-02-2025",
         user: 'Justino Ramírez Ortegón',
         schedule: '11:00 - 13:00',
     }
@@ -46,7 +48,8 @@ const bookings = ref([
                         <div class="flex flex-row bg-sky-300 text-gray-800 font-semibold border border-sky-600">
                             <div class="px-4 py-3 w-24 border-r border-sky-600 text-center">No. Reserva</div>
                             <div class="px-4 py-3 w-28 border-r border-sky-600 text-center">Espacio</div>
-                            <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Usuario</div>
+                            <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Usuario</div>
+                            <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Fecha</div>
                             <div class="px-4 py-3 w-36 text-center">Horario</div>
                         </div>
 
@@ -58,6 +61,7 @@ const bookings = ref([
                             :book-number="booking.number"
                             :book-space="booking.space"
                             :book-user="booking.user"
+                            :book-date="booking.date"
                             :book-schedule="booking.schedule"
                             :cell-width="32"
                             :index="index"

@@ -6,6 +6,8 @@ export const useAuthStore = defineStore('auth', () => {
     const token = ref(localStorage.getItem('token'))
     const user = ref({})
 
+    const isAuthResolved = ref(false)   // Flag to check the very first attempt
+
     const isAuthenticated = computed(() => !!token.value)
     const isAdmin = computed(() => user.value?.role === 'admin' || false) // If user is null, returns false
     
@@ -41,10 +43,11 @@ export const useAuthStore = defineStore('auth', () => {
     const attempt = async () => {
         try {
             const data = await fetchData('user', 'GET')
-
-            user.value = data.user
+            user.value = data
         } catch (error) {
             user.value = {}
+        } finally {
+            isAuthResolved.value = true
         }
     }
 
@@ -53,6 +56,7 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         isAuthenticated,
         isAdmin,
+        isAuthResolved,
         attempt,
         login,
         logout

@@ -40,26 +40,26 @@ const router = createRouter({
     ]
 })
 
-// router.beforeEach(async (to, from) => {
-//     const auth = useAuthStore()
+router.beforeEach(async (to, from) => {
+    const auth = useAuthStore()
 
-//     if(to.path === '/') {
-//         if(auth.isAuthenticated) {
-//             return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
-//         }
-//         else {
-//             return {name: 'login'}
-//         }
-//     }
+    if(to.path === '/') {
+        if(auth.isAuthenticated) {
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
+        }
+        else {
+            return {name: 'login'}
+        }
+    }
 
-//     if(to.meta.requireAuth && auth.isAuthenticated) {
-//         if(to.meta.role && to.meta.role !== auth.user.role) { // If user tries to acces a route different from their role
-//             return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
-//         }
-//     } else if(to.meta.requireAuth && auth.isAuthenticated) {
-//         return {name: 'login'}
-//     }
+    if(to.meta.requireAuth && auth.isAuthenticated) {
+        if(to.meta.role && to.meta.role !== auth.user.role) { // If user tries to acces a route different from their role
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
+        }
+    } else if(to.meta.requireAuth && auth.isAuthenticated) {
+        return {name: 'login'}
+    }
 
-// })
+})
 
 export default router

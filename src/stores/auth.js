@@ -3,9 +3,8 @@ import { ref, computed } from "vue"
 import { fetchData } from "@/api"
 
 export const useAuthStore = defineStore('auth', () => {
-    // token and user are necesary to preserve data across browser sessions
     const token = ref(localStorage.getItem('token'))
-    const user = ref(JSON.parse(localStorage.getItem('user')))
+    const user = ref({})
 
     const isAuthenticated = computed(() => !!token.value)
     const isAdmin = computed(() => user.value?.role === 'admin' || false) // If user is null, returns false
@@ -19,7 +18,6 @@ export const useAuthStore = defineStore('auth', () => {
             user.value = data.user
 
             localStorage.setItem('token', data.token)
-            localStorage.setItem('user', JSON.stringify(data.user))
         } catch(error) {
             throw error
         }
@@ -27,17 +25,28 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = async () => {
         try {
-            const options = {headers: {'Authorization': `Bearer: ${token}`}}
+            const options = {headers: {'Authorization': `Bearer: ${token.value}`}}
             const data = await fetchData('logout', 'POST', options)
 
             token.value = null
             user.value = null
 
             localStorage.removeItem('token')
-            localStorage.removeItem('user')
         } catch (error) {
             console.log(error)
             throw error
+        }
+    }
+
+    // Retrieve user info from backend
+    const attempt = async () => {
+        try {
+            const options = {headers: {'Authorization': `Bearer: ${token.value}`}}
+            const data = await fetchData('user', 'GET', options)
+
+            user.value = data.user
+        } catch (error) {
+            user.value = {}
         }
     }
 
@@ -46,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         isAuthenticated,
         isAdmin,
+        attempt,
         login,
         logout
     }

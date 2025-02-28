@@ -25,8 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     const logout = async () => {
         try {
-            const options = {headers: {'Authorization': `Bearer: ${token.value}`}}
-            const data = await fetchData('logout', 'POST', options)
+            const data = await fetchData('logout', 'POST')
 
             token.value = null
             user.value = null
@@ -41,8 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
     // Retrieve user info from backend
     const attempt = async () => {
         try {
-            const options = {headers: {'Authorization': `Bearer: ${token.value}`}}
-            const data = await fetchData('user', 'GET', options)
+            const data = await fetchData('user', 'GET')
 
             user.value = data.user
         } catch (error) {

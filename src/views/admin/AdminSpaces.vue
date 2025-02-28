@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-
+import { fetchData } from '@/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import SpaceRow from '@/components/admin/SpaceRow.vue';
 import Button from '@/components/Button.vue';
@@ -103,12 +103,9 @@ const deleteSpace = async (id) => {
 
 const fetchSpaces = async () => {
     try {
-        const response = await fetch('http://localhost:5000/spaces')
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
-        }
+        spaces.value = await fetchData('spaces', 'GET')
+        console.log(spaces.value)
 
-        spaces.value = await response.json()
         totalRows.value = spaces.value.length
     } catch (error) {
         console.error('Error fetching spaces', error)
@@ -149,7 +146,7 @@ onMounted(fetchSpaces);
                         :space-name="space.name"
                         :space-description="space.description"
                         :space-capacity="space.capacity"
-                        :space-disponibility="`${space.availability.from} - ${space.availability.to}`"
+                        :space-disponibility="`${space.disponibility.start} - ${space.disponibility.end}`"
                         :index="index"
                         class="relative"
                     />

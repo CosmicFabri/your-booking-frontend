@@ -106,5 +106,39 @@
         "to": "17:00"
       }
     }
+  ],
+  "joseBookings": [
+    {
+      "number": 1,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "27-02-2025",
+      "schedule": "09:00 - 11:00",
+      "id": "8e55"
+    },
+    {
+      "number": 3,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "28-02-2025",
+      "schedule": "09:00 - 11:00",
+      "id": "019f"
+    },
+    {
+      "number": 5,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "01-03-2025",
+      "schedule": "09:00 - 11:00",
+      "id": "3cfe"
+    },
+    {
+      "number": 7,
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "02-03-2025",
+      "schedule": "09:00 - 11:00",
+      "id": "18ac"
+    }
   ]
 }

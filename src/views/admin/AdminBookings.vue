@@ -22,7 +22,6 @@ const bookings = ref([
     }
 ])
 </script>
-
     <template>
         <div class="flex flex-row">
             <!-- Sidebar -->

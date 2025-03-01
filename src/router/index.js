@@ -5,6 +5,9 @@ import SignupView from "@/views/SignupView.vue";
 import AdminBookings from "@/views/admin/AdminBookings.vue";
 import AdminSpaces from "@/views/admin/AdminSpaces.vue";
 import AdminHistory from "@/views/admin/AdminHistory.vue";
+import UserBookings from "@/views/user/UserBookings.vue";
+import UserBook from "@/views/user/UserBook.vue";
+import UserArchive from "@/views/user/UserArchive.vue";
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -36,6 +39,21 @@ const router = createRouter({
             path: '/admin/history',
             name: 'admin-history',
             component: AdminHistory
+        },
+        {
+            path: '/user/bookings',
+            name: 'user-bookings',
+            component: UserBookings
+        },
+        {
+            path: '/user/book',
+            name: 'user-book',
+            component: UserBook
+        },
+        {
+            path: '/user/archive',
+            name: 'user-archive',
+            component: UserArchive
         }
     ]
 })

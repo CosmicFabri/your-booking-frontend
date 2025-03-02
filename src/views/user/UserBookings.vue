@@ -137,10 +137,18 @@ onMounted(fetchBookings)
 
 <template>
     <div class="flex flex-row">
+        <!-- Sidebar -->
         <UserSidebar></UserSidebar>
+
+        <!-- Main view -->
         <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
+
+            <!-- Title -->
             <div class="text-3xl font-semibold">Reservaciones</div>
+
             <div class="flex flex-col mx-auto relative">
+
+                <!-- Table header -->
                 <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
                     <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
                     <div class="px-4 py-3 w-36 border-r border-sky-600 text-center">Espacio</div>

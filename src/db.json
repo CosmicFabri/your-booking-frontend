@@ -172,6 +172,36 @@
         "start": "09:00",
         "end": "11:00"
       }
+    },
+    {
+      "id": "7",
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "02-03-2025",
+      "schedule": {
+        "start": "09:00",
+        "end": "11:00"
+      }
+    },
+    {
+      "id": "9",
+      "space": "CIC-2",
+      "user": "José Aguilar Canepa",
+      "date": "03-03-2025",
+      "schedule": {
+        "start": "09:00",
+        "end": "11:00"
+      }
+    },
+    {
+      "id": "11",
+      "space": "CIC-2",
+      "user": "José Aguilar Canepa",
+      "date": "04-03-2025",
+      "schedule": {
+        "start": "09:00",
+        "end": "11:00"
+      }
     }
   ]
 }

@@ -60,7 +60,6 @@ onMounted(async () => {
                     <div class="px-4 py-3 w-48 text-center">Horario</div>
                 </div>
 
-
                 <!-- Table contents -->
                 <HistoryRow
                     v-for="(booking, index) in paginatedBookings"

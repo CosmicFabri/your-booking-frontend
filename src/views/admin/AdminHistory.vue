@@ -65,12 +65,11 @@ onMounted(async () => {
                 <HistoryRow
                     v-for="(booking, index) in paginatedBookings"
                     :key="booking.id"
-                    :book-number="booking.number"
+                    :book-id="booking.id"
                     :book-space="booking.space"
                     :book-user="booking.user"
                     :book-date="booking.date"
-                    :book-schedule="booking.schedule"
-                    :cell-width="32"
+                    :book-schedule="`${booking.schedule.start} - ${booking.schedule.end}`"
                     :index="index"
                     class="mx-auto"
                 />

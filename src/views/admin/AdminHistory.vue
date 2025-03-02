@@ -65,7 +65,7 @@ onMounted(async () => {
                 <HistoryRow
                     v-for="(booking, index) in paginatedBookings"
                     :key="booking.id"
-                    :book-id="booking.id"
+                    :book-id="parseInt(booking.id)"
                     :book-space="booking.space"
                     :book-user="booking.user"
                     :book-date="booking.date"

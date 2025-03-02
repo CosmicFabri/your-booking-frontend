@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
 import Button from '@/components/Button.vue';
@@ -7,17 +7,35 @@ import Button from '@/components/Button.vue';
 // Total bookings to show
 const bookings = ref([])
 
+// Spaces retrieved
+const spaces = ref([])
+
 // Number of total records loaded
 const records = ref(0)
 
 // ID of the selected booking to edit
 const selectedBookId = ref(null)
 
-// For opening/closing our 'edit booking' modal
+// For opening/closing the 'edit booking' modal
 const openEditBooking = ref(false)
+
+// Values we're updating in the form
+const form = ref({
+    space: '',
+    date: '',
+    schedule: {
+        start: '',
+        end: ''
+    }
+})
+
+// Available times for the schedule
+const availableStartTimes = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00']
+const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
 const toggleEditModal = (id) => {
     selectedBookId.value = id
+    retrieveSpaces()
     openEditBooking.value = true
 }
 
@@ -26,38 +44,52 @@ const closeEditModal = () => {
     openEditBooking.value = false
 }
 
+const retrieveSpaces = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/spaces')
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`)
+        }
+        spaces.value = await response.json()
+    } catch (error) {
+        console.error('Error fetching spaces', error)
+    }
+}
 
-
-onMounted(async () => {
+const fetchBookings = async () => {
     try {
         const response = await fetch('http://localhost:5000/joseBookings')
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
-
-        const json = await response.json();
-        const jsonStr = JSON.stringify(json)
-
-        bookings.value = JSON.parse(jsonStr)
+        bookings.value = await response.json()
         records.value = bookings.value.length
     } catch (error) {
         console.error('Error fetching bookings', error)
     }
+}
+
+// Actualizar la hora de término automáticamente cuando se elige la hora de inicio
+watch(() => form.value.schedule.start, (newStart) => {
+    if (newStart) {
+        const startIndex = availableStartTimes.indexOf(newStart)
+        if (startIndex !== -1) {
+            form.value.schedule.end = availableEndTimes[startIndex]
+        } else {
+            form.value.schedule.end = availableTimes[availableTimes.length - 1] // Última opción posible
+        }
+    }
 })
+
+onMounted(fetchBookings)
 </script>
 
 <template>
     <div class="flex flex-row">
-        <!-- Sidebar -->
         <UserSidebar></UserSidebar>
-
-        <!-- Main view -->
         <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
-            <!-- Title -->
             <div class="text-3xl font-semibold">Reservaciones</div>
-
             <div class="flex flex-col mx-auto relative">
-                <!-- Table header -->
                 <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
                     <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
                     <div class="px-4 py-3 w-36 border-r border-sky-600 text-center">Espacio</div>
@@ -66,14 +98,9 @@ onMounted(async () => {
                     <div class="px-4 py-3 w-40 text-center">Horario</div>
                 </div>
 
-                <!-- Table contents -->
-                <div
-                    v-for="(booking, index) in bookings"
-                    :key="booking.id"
-                    class="flex flex-row gap-x-8 relative"
-                >
+                <div v-for="(booking, index) in bookings" :key="booking.id" class="flex flex-row gap-x-8 relative">
                     <BookRow
-                        :book-id="booking.id"
+                        :book-id="parseInt(booking.id)"
                         :book-space="booking.space"
                         :book-user="booking.user"
                         :book-date="booking.date"
@@ -91,7 +118,6 @@ onMounted(async () => {
                     </button>
                 </div>
 
-                <!-- Book button outside the loop -->
                 <div v-if="bookings.length > 0" class="mt-4 flex justify-end">
                     <Button :to="'/user/book'" text="Reservar"></Button>
                 </div>
@@ -102,15 +128,38 @@ onMounted(async () => {
     <!-- Edit booking modal -->
     <div v-if="openEditBooking" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" @click="closeEditModal">
         <div class="bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
-            <!-- Close button -->
-            <button @click="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-                ✖
-            </button>
-
-            <!-- Title -->
+            <button @click="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
             <div class="text-2xl font-semibold text-center mb-4">Editar reservación</div>
 
+            <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-4">
+                <div class="flex flex-col">
+                    <span class="font-medium">Espacio:</span>
+                    <select v-model="form.space" id="space" name="space" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                        <option v-for="space in spaces" :key="space.id">{{ space.name }}</option>
+                    </select>
+                </div>
 
+                <div class="flex flex-col">
+                    <label for="date" class="font-medium">Fecha:</label>
+                    <input v-model="form.date" type="date" id="date" name="date" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="font-medium">Disponibilidad:</span>
+                    <div class="flex items-center gap-x-2">
+                        <label for="start">De:</label>
+                        <select v-model="form.schedule.start" id="start" name="start" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                            <option v-for="time in availableStartTimes" :key="time">{{ time }}</option>
+                        </select>
+                        <label for="end">A:</label>
+                        <input v-model="form.schedule.end" type="text" id="end" name="end" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 w-24 focus:outline-none" disabled>
+                    </div>
+                </div>
+
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                    Aplicar cambios
+                </button>
+            </form>
         </div>
     </div>
 </template>

@@ -83,7 +83,7 @@
   ],
   "spaces": [
     {
-      "id": "1",
+      "id": 1,
       "name": "CIC-1",
       "description": "Sala 1 del CIC",
       "capacity": 50,
@@ -93,7 +93,7 @@
       }
     },
     {
-      "id": "2",
+      "id": 2,
       "name": "CIC-2",
       "description": "Sala 2 del CIC",
       "capacity": 45,
@@ -103,7 +103,7 @@
       }
     },
     {
-      "id": "3",
+      "id": 3,
       "name": "CIC-3",
       "description": "Sala 3 del CIC",
       "capacity": 50,
@@ -113,7 +113,7 @@
       }
     },
     {
-      "id": "4",
+      "id": 4,
       "name": "CIC-4",
       "description": "Sala 4 del CIC",
       "capacity": 60,
@@ -123,7 +123,7 @@
       }
     },
     {
-      "id": "5",
+      "id": 5,
       "name": "ACT",
       "description": "Sala de Actos",
       "capacity": 100,
@@ -133,7 +133,7 @@
       }
     },
     {
-      "id": "6",
+      "id": 6,
       "name": "DID",
       "description": "Sala Didáctica",
       "capacity": 75,

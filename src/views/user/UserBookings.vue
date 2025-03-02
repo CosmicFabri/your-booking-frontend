@@ -22,6 +22,7 @@ const openEditBooking = ref(false)
 // Values we're updating in the form
 const form = ref({
     space: '',
+    user: '',
     date: '',
     schedule: {
         start: '',
@@ -35,6 +36,20 @@ const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
 
 const toggleEditModal = (id) => {
     selectedBookId.value = id
+
+    const selectedBooking = bookings.value.find(booking => booking.id === id)
+    if (selectedBooking) {
+        form.value = {
+            space: selectedBooking.space,
+            user: selectedBooking.user, // Preserve the user name
+            date: selectedBooking.date,
+            schedule: { 
+                start: selectedBooking.schedule.start, 
+                end: selectedBooking.schedule.end 
+            }
+        }
+    }
+
     retrieveSpaces()
     openEditBooking.value = true
 }
@@ -69,7 +84,43 @@ const fetchBookings = async () => {
     }
 }
 
-// Actualizar la hora de término automáticamente cuando se elige la hora de inicio
+const handleSubmit = async (id) => {
+    try {
+        const response = await fetch(`http://localhost:5000/joseBookings/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(form.value)
+        })
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`)
+        }
+
+        await fetchBookings()
+        closeEditModal()
+    } catch (error) {
+        console.error(`Error updating booking with id ${id}`, error)
+    }
+}
+
+const handleCancellation = async (id) => {
+    try {
+        const response = await fetch(`http://localhost:5000/joseBookings/${id}`, {
+            method: 'DELETE'
+        })
+
+        if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`)
+        }
+
+        await fetchBookings()
+        closeEditModal()
+    } catch (error) {
+        console.error(`Error cancelling booking with id ${id}`, error)
+    }
+}
+
+// Update the end time automatically when selecting the start hour
 watch(() => form.value.schedule.start, (newStart) => {
     if (newStart) {
         const startIndex = availableStartTimes.indexOf(newStart)
@@ -131,7 +182,7 @@ onMounted(fetchBookings)
             <button @click="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
             <div class="text-2xl font-semibold text-center mb-4">Editar reservación</div>
 
-            <form @submit.prevent="handleSubmit" class="flex flex-col gap-y-4">
+            <form @submit.prevent="handleSubmit(selectedBookId)" class="flex flex-col gap-y-4">
                 <div class="flex flex-col">
                     <span class="font-medium">Espacio:</span>
                     <select v-model="form.space" id="space" name="space" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
@@ -145,7 +196,7 @@ onMounted(fetchBookings)
                 </div>
 
                 <div class="flex flex-col">
-                    <span class="font-medium">Disponibilidad:</span>
+                    <span class="font-medium">Horario:</span>
                     <div class="flex items-center gap-x-2">
                         <label for="start">De:</label>
                         <select v-model="form.schedule.start" id="start" name="start" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
@@ -158,6 +209,10 @@ onMounted(fetchBookings)
 
                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
                     Aplicar cambios
+                </button>
+
+                <button @click="handleCancellation(selectedBookId)" class="w-fill bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                    Cancelar reservación
                 </button>
             </form>
         </div>

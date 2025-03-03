@@ -10,13 +10,13 @@ const bookings = ref([
         number: 1,
         space: 'CIC-1',
         user: 'José Aguilar Canepa',
-        date: "27-02-2025",
+        date: '2025-02-27',
         schedule: '09:00 - 11:00',
     },
     {
         number: 2,
         space: 'CIC-2',
-        date: "28-02-2025",
+        date: '2025-02-28',
         user: 'Justino Ramírez Ortegón',
         schedule: '11:00 - 13:00',
     }

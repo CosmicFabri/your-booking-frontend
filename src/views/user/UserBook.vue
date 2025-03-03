@@ -62,7 +62,6 @@ const fetchBookings = async () => {
 
         const json = await response.json()
         totalBookings.value = json.length
-        console.log(totalBookings.value)
     } catch (error) {
         console.error('Error fetching bookings', error)
     }
@@ -79,10 +78,8 @@ const fetchLastId = async () => {
         
         if (json.length > 0) {
             lastBookingId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
-            console.log(`Last booking ID: ${lastBookingId.value}`)
         } else {
             lastBookingId.value = null
-            console.log('No bookings found.')
         }
     } catch (error) {
         console.error('Error fetching last booking ID', error)
@@ -92,7 +89,6 @@ const fetchLastId = async () => {
 const toggleShowCalendar = () => {
     if (form.value.space) {
         showCalendar.value = true
-        console.log(`Space selected: ${form.value.space}`)
     }
 }
 
@@ -122,8 +118,6 @@ const handleSubmit = async () => {
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`)
         }
-
-        console.log(await response.json())
 
         totalBookings.value++
         closeShowCalendar()

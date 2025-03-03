@@ -182,7 +182,7 @@ onMounted(fetchBookings)
 
     <!-- Edit booking modal -->
     <div v-if="openEditBooking" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" @click="closeEditModal">
-        <div class="bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
+        <div class="flex flex-col justify-stretch bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
             <button @click="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
             <div class="text-2xl font-semibold text-center mb-4">Editar reservación</div>
 
@@ -216,7 +216,7 @@ onMounted(fetchBookings)
                 </button>
             </form>
 
-            <button @click="handleCancellation(selectedBookId)" class="flex justify-around w-fill bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+            <button @click="handleCancellation(selectedBookId)" class="w-fill bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
                 Cancelar reservación
             </button>
         </div>

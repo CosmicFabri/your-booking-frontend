@@ -133,12 +133,12 @@
       }
     },
     {
-      "id": "6",
+      "id": 6,
       "name": "DID",
       "description": "Sala Didáctica",
       "capacity": 75,
       "availability": {
-        "from": "11:00",
+        "from": "10:00",
         "to": "19:00"
       }
     }

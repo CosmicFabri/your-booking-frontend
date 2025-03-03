@@ -9,6 +9,7 @@ import AdminHistory from "@/views/admin/AdminHistory.vue";
 import UserBookings from "@/views/user/UserBookings.vue";
 import UserBook from "@/views/user/UserBook.vue";
 import UserArchive from "@/views/user/UserArchive.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -60,6 +61,11 @@ const router = createRouter({
             path: '/user/archive',
             name: 'user-archive',
             component: UserArchive
+        },
+        {
+            path: '/:catchAll(.*)',
+            name: 'not-found',
+            component: NotFoundView
         }
     ]
 })

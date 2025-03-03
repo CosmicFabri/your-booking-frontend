@@ -3,9 +3,20 @@ import { ref, onMounted, watch } from 'vue';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import FullCalendar from '@/components/FullCalendar.vue';
 
+// Spaces for our select element
 const spaces = ref([])
-const showCalendar = ref(false)
+
+// For showing/hiding the calendar and form modal
+const showCalendarForm = ref(false)
+
+// For showing/hiding the 'success' modal
+// when submitting a new booking
+const showSuccessModal = ref(false)
+
+// For retrieving the ID of the last booking
 const totalBookings = ref(null)
+
+// ID of the last booking
 const lastBookingId = ref(null)
 
 // Structure of the new booking
@@ -86,14 +97,23 @@ const fetchLastId = async () => {
     }
 }
 
-const toggleShowCalendar = () => {
+const toggleShowCalendarForm = () => {
     if (form.value.space) {
-        showCalendar.value = true
+        showCalendarForm.value = true
     }
 }
 
-const closeShowCalendar = () => {
-    showCalendar.value = false
+const closeShowCalendarForm = () => {
+    showCalendarForm.value = false
+}
+
+const toggleShowSuccessModal = () => {
+    showSuccessModal.value = true
+}
+
+const closeShowSuccessModal = () => {
+    closeShowCalendarForm()
+    showSuccessModal.value = false
 }
 
 const handleSubmit = async () => {
@@ -120,7 +140,7 @@ const handleSubmit = async () => {
         }
 
         totalBookings.value++
-        closeShowCalendar()
+        toggleShowSuccessModal()
     } catch (error) {
         console.error(`Error submitting booking with id ${id}`, error)
     }
@@ -144,7 +164,7 @@ onMounted(fetchEverything)
                 <!-- Choose a space -->
                 <div class="flex flex-row gap-x-4">
                     <span class="text-lg font-semibold">Espacio a reservar:</span>
-                    <select v-model="form.space" @change="toggleShowCalendar"
+                    <select v-model="form.space" @change="toggleShowCalendarForm"
                         class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                         
                         <option value="" disabled selected hidden>Seleccionar</option>
@@ -155,7 +175,7 @@ onMounted(fetchEverything)
                 </div>
                 
                 <!-- Calendar and the rest of components -->
-                <div v-if="showCalendar" class="flex flex-row flex-1 justify-center gap-x-12">
+                <div v-if="showCalendarForm" class="flex flex-row flex-1 justify-center gap-x-12">
                     <!-- Calendar -->
                     <div class="w-96">
                         <FullCalendar></FullCalendar>
@@ -197,6 +217,24 @@ onMounted(fetchEverything)
                     </div>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Success submitting booking modal -->
+    <div v-if="showSuccessModal" class="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50" @click="closeShowSuccessModal">
+        <div class="flex flex-col gap-y-6 justify-stretch bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
+            <div class="flex flex-row items-center justify-center gap-x-4">
+                <span class="pi pi-info-circle text-sky-600 font-semibold"></span>
+                <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
+            </div>
+            <div class="text-md text-justify">
+                Su reservación en el espacio {{ form.space }} a las
+                {{ form.schedule.start }} horas con fecha {{ form.date }}
+                ha sido agregada exitosamente.
+            </div>
+            <button @click="closeShowSuccessModal" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                Aceptar
+            </button>
         </div>
     </div>
 </template>

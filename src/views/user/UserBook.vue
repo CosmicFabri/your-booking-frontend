@@ -5,13 +5,14 @@ import FullCalendar from '@/components/FullCalendar.vue';
 
 const spaces = ref([])
 const showCalendar = ref(false)
-const selectedSpaceId = ref(null)
-const totalSpaces = ref(null)
+const totalBookings = ref(null)
+const lastBookingId = ref(null)
 
 // Structure of the new booking
 const form = ref({
-    id: totalSpaces.value,
+    id: totalBookings.value,
     space: '',
+    user: 'José Aguilar Canepa',
     date: '',
     schedule: {
         start: '',
@@ -24,42 +25,114 @@ const availableStartTimes = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00
 const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
 // Update the end time automatically when selecting the start hour
+// Update the end time automatically when selecting the start hour
 watch(() => form.value.schedule.start, (newStart) => {
     if (newStart) {
         const startIndex = availableStartTimes.indexOf(newStart)
-        if (startIndex !== -1) {
-            form.value.schedule.end = availableEndTimes[startIndex]
-        } else {
-            form.value.schedule.end = availableTimes[availableTimes.length - 1] // Última opción posible
-        }
+        form.value.schedule.end = availableEndTimes[startIndex]
     }
 })
 
-const retrieveSpaces = async () => {
+// For fetching spaces, bookings and the last booking ID
+const fetchEverything = async () => {
+    fetchSpaces()
+    fetchBookings()
+    fetchLastId()
+}
+
+const fetchSpaces = async () => {
     try {
         const response = await fetch('http://localhost:5000/spaces');
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`)
         }
+
         spaces.value = await response.json()
-        totalSpaces.value = spaces.value.length
     } catch (error) {
         console.error('Error fetching spaces', error)
     }
 }
 
-const toggleShowCalendar = () => {
-    if (selectedSpaceId.value) {
-        showCalendar.value = true
-        console.log("Selected Space ID:", selectedSpaceId.value)
+const fetchBookings = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/joseBookings')
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`)
+        }
+
+        const json = await response.json()
+        totalBookings.value = json.length
+        console.log(totalBookings.value)
+    } catch (error) {
+        console.error('Error fetching bookings', error)
     }
 }
 
-const handleSubmit = async () => {
-    // Add your submit logic here
+const fetchLastId = async () => {
+    try {
+        const response = await fetch('http://localhost:5000/joseBookings')
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`)
+        }
+
+        const json = await response.json()
+        
+        if (json.length > 0) {
+            lastBookingId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
+            console.log(`Last booking ID: ${lastBookingId.value}`)
+        } else {
+            lastBookingId.value = null
+            console.log('No bookings found.')
+        }
+    } catch (error) {
+        console.error('Error fetching last booking ID', error)
+    }
 }
 
-onMounted(retrieveSpaces)
+const toggleShowCalendar = () => {
+    if (form.value.space) {
+        showCalendar.value = true
+        console.log(`Space selected: ${form.value.space}`)
+    }
+}
+
+const closeShowCalendar = () => {
+    showCalendar.value = false
+}
+
+const handleSubmit = async () => {
+    const newBooking = {
+        id: String(lastBookingId.value ? lastBookingId.value + 1 : 1), // Ensure ID is unique
+        space: form.value.space,
+        user: form.value.user,
+        date: form.value.date,
+        schedule: {
+            start: form.value.schedule.start,
+            end: form.value.schedule.end
+        }
+    }
+
+    try {
+        const response = await fetch('http://localhost:5000/joseBookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newBooking)
+        })
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`)
+        }
+
+        console.log(await response.json())
+
+        totalBookings.value++
+        closeShowCalendar()
+    } catch (error) {
+        console.error(`Error submitting booking with id ${id}`, error)
+    }
+}
+
+onMounted(fetchEverything)
 </script>
 
 <template>
@@ -77,11 +150,11 @@ onMounted(retrieveSpaces)
                 <!-- Choose a space -->
                 <div class="flex flex-row gap-x-4">
                     <span class="text-lg font-semibold">Espacio a reservar:</span>
-                    <select v-model="selectedSpaceId" @change="toggleShowCalendar"
+                    <select v-model="form.space" @change="toggleShowCalendar"
                         class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                         
-                        <option value="" disabled selected hidden>Selecciona un espacio</option>
-                        <option v-for="space in spaces" :key="space.id" :value="space.id">
+                        <option value="" disabled selected hidden>Seleccionar</option>
+                        <option v-for="space in spaces" :key="space.id" :value="space.name">
                             {{ space.name }}
                         </option>
                     </select>
@@ -106,7 +179,7 @@ onMounted(retrieveSpaces)
                             <!-- Date -->
                             <div class="flex flex-row justify-between items-center gap-x-4">
                                 <label for="date" class="text-md font-semibold">Fecha:</label>
-                                <input type="date" id="date" name="date" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                                <input v-model="form.date" type="date" id="date" name="date" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                             </div>
     
                             <!-- Time -->

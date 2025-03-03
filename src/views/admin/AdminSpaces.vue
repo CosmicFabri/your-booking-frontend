@@ -72,7 +72,7 @@ const handleSubmit = async () => {
             throw new Error(`Error: ${response.status}`)
         }
 
-        console.log(await response.json());
+        console.log(await response.json())
         
         totalRows.value++
         await fetchSpaces() // Refresh the list after adding a space

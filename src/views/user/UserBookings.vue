@@ -124,11 +124,7 @@ const handleCancellation = async (id) => {
 watch(() => form.value.schedule.start, (newStart) => {
     if (newStart) {
         const startIndex = availableStartTimes.indexOf(newStart)
-        if (startIndex !== -1) {
-            form.value.schedule.end = availableEndTimes[startIndex]
-        } else {
-            form.value.schedule.end = availableTimes[availableTimes.length - 1] // Última opción posible
-        }
+        form.value.schedule.end = availableEndTimes[startIndex]
     }
 })
 
@@ -190,7 +186,7 @@ onMounted(fetchBookings)
             <button @click="closeEditModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">✖</button>
             <div class="text-2xl font-semibold text-center mb-4">Editar reservación</div>
 
-            <form @submit.prevent="handleSubmit(selectedBookId)" class="flex flex-col gap-y-4">
+            <form @submit.prevent="handleSubmit(selectedBookId)" class="flex flex-col gap-y-4 mb-4">
                 <div class="flex flex-col">
                     <span class="font-medium">Espacio:</span>
                     <select v-model="form.space" id="space" name="space" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
@@ -218,11 +214,11 @@ onMounted(fetchBookings)
                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
                     Aplicar cambios
                 </button>
-
-                <button @click="handleCancellation(selectedBookId)" class="w-fill bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
-                    Cancelar reservación
-                </button>
             </form>
+
+            <button @click="handleCancellation(selectedBookId)" class="flex justify-around w-fill bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                Cancelar reservación
+            </button>
         </div>
     </div>
 </template>

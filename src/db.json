@@ -22,6 +22,7 @@
     },
     {
       "space": "CIC-2",
+      "user": "José Aguilar Canepa",
       "date": "2025-03-05",
       "schedule": {
         "start": "10:00",
@@ -144,47 +145,17 @@
   ],
   "joseBookings": [
     {
-      "id": "1",
+      "id": "2",
       "space": "CIC-1",
       "user": "José Aguilar Canepa",
-      "date": "27-02-2025",
+      "date": "2025-03-04",
       "schedule": {
-        "start": "09:00",
-        "end": "11:00"
+        "start": "10:00",
+        "end": "12:00"
       }
     },
     {
-      "space": "CIC-1",
-      "user": "José Aguilar Canepa",
-      "date": "2025-03-09",
-      "schedule": {
-        "start": "11:00",
-        "end": "13:00"
-      },
-      "id": "3"
-    },
-    {
-      "id": "5",
-      "space": "CIC-1",
-      "user": "José Aguilar Canepa",
-      "date": "01-03-2025",
-      "schedule": {
-        "start": "09:00",
-        "end": "11:00"
-      }
-    },
-    {
-      "id": "7",
-      "space": "CIC-1",
-      "user": "José Aguilar Canepa",
-      "date": "02-03-2025",
-      "schedule": {
-        "start": "09:00",
-        "end": "11:00"
-      }
-    },
-    {
-      "id": "9",
+      "id": "3",
       "space": "CIC-2",
       "user": "José Aguilar Canepa",
       "date": "03-03-2025",
@@ -194,13 +165,43 @@
       }
     },
     {
-      "id": "11",
+      "id": "4",
       "space": "CIC-2",
       "user": "José Aguilar Canepa",
       "date": "04-03-2025",
       "schedule": {
         "start": "09:00",
         "end": "11:00"
+      }
+    },
+    {
+      "id": "5",
+      "space": "CIC-2",
+      "user": "José Aguilar Canepa",
+      "date": "2025-03-04",
+      "schedule": {
+        "start": "15:00",
+        "end": "17:00"
+      }
+    },
+    {
+      "id": "6",
+      "space": "CIC-4",
+      "user": "José Aguilar Canepa",
+      "date": "2025-03-24",
+      "schedule": {
+        "start": "15:00",
+        "end": "17:00"
+      }
+    },
+    {
+      "id": "7",
+      "space": "CIC-1",
+      "user": "José Aguilar Canepa",
+      "date": "2025-03-17",
+      "schedule": {
+        "start": "13:00",
+        "end": "15:00"
       }
     }
   ]

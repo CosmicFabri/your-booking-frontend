@@ -1,6 +1,23 @@
 {
   "users": [
-    
+    {
+      "id": "1",
+      "name": "José Aguilar Canepa",
+      "email": "jcaguilar@dev.com",
+      "password": "pass123"
+    },
+    {
+      "id": "2",
+      "name": "Justino",
+      "email": "jramirez@uacam.mx",
+      "password": "password"
+    },
+    {
+      "id": "3",
+      "name": "Manuel",
+      "email": "gmanuel@uacam.mx",
+      "password": "gmanuel"
+    }
   ],
   "bookings": [
     {
@@ -136,13 +153,13 @@
       }
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "DID",
       "description": "Sala Didáctica",
-      "capacity": 75,
+      "capacity": 50,
       "availability": {
-        "from": "10:00",
-        "to": "19:00"
+        "from": "08:00",
+        "to": "17:00"
       }
     }
   ],
@@ -189,19 +206,19 @@
     },
     {
       "id": "8",
-      "space": "ACT",
+      "space": "CIC-1",
       "user": "José Aguilar Canepa",
       "date": "2025-03-04",
       "schedule": {
-        "start": "13:00",
-        "end": "15:00"
+        "start": "08:00",
+        "end": "10:00"
       }
     },
     {
       "id": "9",
-      "space": "DID",
+      "space": "CIC-4",
       "user": "José Aguilar Canepa",
-      "date": "2025-03-30",
+      "date": "2025-03-05",
       "schedule": {
         "start": "15:00",
         "end": "17:00"

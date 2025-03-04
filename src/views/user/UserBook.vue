@@ -13,15 +13,12 @@ const showCalendarForm = ref(false)
 // when submitting a new booking
 const showSuccessModal = ref(false)
 
-// For retrieving the ID of the last booking
-const totalBookings = ref(null)
-
 // ID of the last booking
 const lastBookingId = ref(null)
 
 // Structure of the new booking
 const form = ref({
-    id: totalBookings.value,
+    id: { type: Number },
     space: '',
     user: 'José Aguilar Canepa',
     date: '',
@@ -36,7 +33,6 @@ const availableStartTimes = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00
 const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
 // Update the end time automatically when selecting the start hour
-// Update the end time automatically when selecting the start hour
 watch(() => form.value.schedule.start, (newStart) => {
     if (newStart) {
         const startIndex = availableStartTimes.indexOf(newStart)
@@ -47,7 +43,6 @@ watch(() => form.value.schedule.start, (newStart) => {
 // For fetching spaces, bookings and the last booking ID
 const fetchEverything = async () => {
     fetchSpaces()
-    fetchBookings()
     fetchLastId()
 }
 
@@ -61,20 +56,6 @@ const fetchSpaces = async () => {
         spaces.value = await response.json()
     } catch (error) {
         console.error('Error fetching spaces', error)
-    }
-}
-
-const fetchBookings = async () => {
-    try {
-        const response = await fetch('http://localhost:5000/joseBookings')
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        const json = await response.json()
-        totalBookings.value = json.length
-    } catch (error) {
-        console.error('Error fetching bookings', error)
     }
 }
 
@@ -92,6 +73,8 @@ const fetchLastId = async () => {
         } else {
             lastBookingId.value = null
         }
+
+        console.log(lastBookingId.value)
     } catch (error) {
         console.error('Error fetching last booking ID', error)
     }
@@ -138,11 +121,10 @@ const handleSubmit = async () => {
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`)
         }
-
-        totalBookings.value++
+        
         toggleShowSuccessModal()
     } catch (error) {
-        console.error(`Error submitting booking with id ${id}`, error)
+        console.error(`Error submitting booking with id ${newBooking.id}`, error)
     }
 }
 

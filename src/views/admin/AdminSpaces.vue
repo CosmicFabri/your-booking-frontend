@@ -51,7 +51,7 @@ const form = ref({
 
 const handleSubmit = async () => {
     const newSpace = {
-        id: totalRows.value ? totalRows.value + 1 : 1, // Ensure ID is unique
+        id: String(totalRows.value ? totalRows.value + 1 : 1), // Ensure ID is unique
         name: form.value.name,
         description: form.value.description,
         capacity: form.value.capacity,

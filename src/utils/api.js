@@ -1,4 +1,4 @@
-import { useAuthStore } from "./stores/auth"
+import { useAuthStore } from "../stores/auth"
 
 // This is used to abstract fetch in one single place
 

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { fetchData } from '@/api';
+import { fetchData } from '@/utils/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import SpaceRow from '@/components/admin/SpaceRow.vue';
 import Button from '@/components/Button.vue';

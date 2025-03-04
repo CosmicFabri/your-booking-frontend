@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import { fetchData } from '@/utils/api';
 
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import FullCalendar from '@/components/FullCalendar.vue';

@@ -20,6 +20,8 @@ const isActiveLink = (routePath) => {
                 'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/spaces">Espacios</RouterLink>
             <RouterLink :class="[isActiveLink('/admin/history') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
                 'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/history">Historial</RouterLink>
+                <RouterLink :class="[isActiveLink('/admin/register') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/admin/register">Registrar</RouterLink>
         </div>
         <div class="p-4">
             <Button

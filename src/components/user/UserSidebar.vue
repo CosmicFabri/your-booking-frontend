@@ -1,15 +1,33 @@
 <script setup>
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
+import Button from '../Button.vue';
+
+const isActiveLink = (routePath) => {
+    const route = useRoute() // Current route path we're in
+    return route.path === routePath
+}
 </script>
 
 <template>
-    <div class="flex flex-col pl-4 pr-16 py-4 bg-gray-300 justify-between h-[calc(100vh-7rem)]">
-        <div class="flex flex-col gap-y-4">
-            <RouterLink to="/admin/bookings">Bookings</RouterLink>
-            <RouterLink to="/admin/spaces">Book</RouterLink>
+    <div class="flex flex-col pl-6 pr-12 py-8 bg-gray-200 justify-between w-48 h-[calc(100vh-7rem)] shadow-xl">
+        <div class="absolute text-xl font-semibold text-sky-600">
+            [username]
         </div>
-        <div>
-            <RouterLink to="/">Log out</RouterLink>
+        <div class="flex flex-col gap-y-4 mt-12">
+            <RouterLink :class="[isActiveLink('/user/bookings') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/bookings">Reservas</RouterLink>
+            <RouterLink :class="[isActiveLink('/user/book') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/book">Reservar</RouterLink>
+            <RouterLink :class="[isActiveLink('/user/archive') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/archive">Archivo</RouterLink>
+        </div>
+        <div class="p-4">
+            <Button
+                :text="'Salir'"
+                :to="'/'"
+                :font-size="'2xl'"
+                :color="'red'"
+            ></Button>
         </div>
     </div>
 </template>

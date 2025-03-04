@@ -12,8 +12,14 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
+        dateClick: this.handleDateClick,
         weekends: false,
       }
+    }
+  },
+  methods: {
+    handleDateClick: function(arg) {
+      alert('date click! ' + arg.dateStr)
     }
   }
 }

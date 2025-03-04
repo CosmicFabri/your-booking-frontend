@@ -2,10 +2,10 @@ import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import HomeView from "@/views/HomeView.vue";
 import LoginView from "@/views/LoginView.vue";
-import SignupView from "@/views/SignupView.vue";
 import AdminBookings from "@/views/admin/AdminBookings.vue";
 import AdminSpaces from "@/views/admin/AdminSpaces.vue";
 import AdminHistory from "@/views/admin/AdminHistory.vue";
+import AdminRegister from "@/views/admin/AdminRegister.vue";
 import UserBookings from "@/views/user/UserBookings.vue";
 import UserBook from "@/views/user/UserBook.vue";
 import UserArchive from "@/views/user/UserArchive.vue";
@@ -27,11 +27,6 @@ const router = createRouter({
             // meta: {guest: true}
         },
         {
-            path: '/signup',
-            name: 'signup',
-            component: SignupView
-        },
-        {
             path: '/admin/bookings',
             name: 'admin-bookings',
             component: AdminBookings,
@@ -46,6 +41,11 @@ const router = createRouter({
             path: '/admin/history',
             name: 'admin-history',
             component: AdminHistory
+        },
+        {
+            path: '/admin/register',
+            name: 'admin-register',
+            component: AdminRegister
         },
         {
             path: '/user/bookings',

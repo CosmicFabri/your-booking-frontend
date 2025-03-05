@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-
+import { ref, onMounted, computed } from 'vue';
+import { fetchData } from '@/utils/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import SpaceRow from '@/components/admin/SpaceRow.vue';
 import Button from '@/components/Button.vue';
@@ -16,9 +16,6 @@ const openDeleteSpace = ref(false)
 
 // Selected space for its deletion
 const selectedSpaceId = ref(null)
-
-// Number of rows in total
-const totalRows = ref(null)
 
 const toggleAddModal = () => {
     openAddSpace.value = true
@@ -38,41 +35,40 @@ const closeDeleteModal = () => {
     selectedSpaceId.value = null
 }
 
+
+// Generates lists for disponibility hours 
+const selectedStartHour = ref(0)
+const availableStartHours = ref(Array.from({length: 14}, (_, i) => `${String(i + 7).padStart(2, '0')}:00`))
+const availableEndHours = ref(Array.from({length: 14 - selectedStartHour.value}, (_, i) => `${String(i + selectedStartHour.value + 8).padStart(2, '0')}:00`))
+const updateSelectedStartHour = (event) => { 
+    selectedStartHour.value = event.target.selectedIndex
+    availableEndHours.value = Array.from({length: 14 - selectedStartHour.value}, (_, i) => `${String(i + selectedStartHour.value + 8).padStart(2, '0')}:00`)
+    form.value.disponibility.to = availableEndHours.value[0]
+}
+
+
 const form = ref({
-    id: totalRows.value,
     name: '',
     description: '',
-    capacity: 0,
-    availability: {
-        from: '08:00',
-        to: '17:00'
+    capacity: 1,
+    disponibility: {
+        from: availableStartHours.value[0],
+        to: availableEndHours.value[0]
     }
 })
 
 const handleSubmit = async () => {
     const newSpace = {
-        id: String(totalRows.value ? totalRows.value + 1 : 1), // Ensure ID is unique
         name: form.value.name,
         description: form.value.description,
         capacity: form.value.capacity,
-        availability: {
-            from: form.value.availability.from,
-            to: form.value.availability.to,
-        }
+        disponibility_start: form.value.disponibility.from,
+        disponibility_end: form.value.disponibility.to
     }
 
     try {
-        const response = await fetch('http://localhost:5000/spaces', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newSpace)
-        })
-
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
+        const response = await fetchData('spaces', 'POST', newSpace)
         
-        totalRows.value++
         await fetchSpaces() // Refresh the list after adding a space
         closeAddModal() // Close the modal
     } catch (error) {
@@ -82,12 +78,7 @@ const handleSubmit = async () => {
 
 const deleteSpace = async (id) => {
     try {
-        const response = await fetch(`http://localhost:5000/spaces/${id}`,
-            { method: 'DELETE' })
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
+        const response = await fetchData(`spaces/${id}`, 'DELETE')
 
         // Close the modal
         closeDeleteModal()
@@ -101,13 +92,7 @@ const deleteSpace = async (id) => {
 
 const fetchSpaces = async () => {
     try {
-        const response = await fetch('http://localhost:5000/spaces')
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
-        }
-
-        spaces.value = await response.json()
-        totalRows.value = spaces.value.length
+        spaces.value = await fetchData('spaces', 'GET')
     } catch (error) {
         console.error('Error fetching spaces', error)
     }
@@ -147,7 +132,7 @@ onMounted(fetchSpaces);
                         :space-name="space.name"
                         :space-description="space.description"
                         :space-capacity="space.capacity"
-                        :space-disponibility="`${space.availability.from} - ${space.availability.to}`"
+                        :space-disponibility="`${space.disponibility.start} - ${space.disponibility.end}`"
                         :index="index"
                         class="relative"
                     />
@@ -194,23 +179,19 @@ onMounted(fetchSpaces);
 
                 <div class="flex flex-col">
                     <label for="capacity" class="font-medium">Capacidad:</label>
-                    <input v-model="form.capacity" type="number" id="capacity" name="capacity" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
+                    <input v-model="form.capacity" type="number" id="capacity" name="capacity" min="1" max="200" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none" required>
                 </div>
 
                 <div class="flex flex-col">
                     <span class="font-medium">Disponibilidad:</span>
                     <div class="flex items-center gap-x-2">
                         <label for="from">De:</label>
-                        <select v-model="form.availability.from" id="from" name="from" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
-                            <option>08:00</option>
-                            <option>09:00</option>
-                            <option>10:00</option>
+                        <select v-model="form.disponibility.from" @change="updateSelectedStartHour" id="from" name="from" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                            <option v-for="(hour, index) in availableStartHours" :key="index">{{ hour }}</option>
                         </select>
                         <label for="to">A:</label>
-                        <select v-model="form.availability.to" id="to" name="to" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
-                            <option>17:00</option>
-                            <option>18:00</option>
-                            <option>19:00</option>
+                        <select v-model="form.disponibility.to" id="to" name="to" class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none">
+                            <option v-for="(hour, index) in availableEndHours" :key="index">{{ hour }}</option>
                         </select>
                     </div>
                 </div>

@@ -6,7 +6,6 @@ import { createPinia } from 'pinia'
 
 import { createApp } from 'vue'
 import App from './App.vue'
-import { useAuthStore } from './stores/auth'
 
 const app = createApp(App)
 
@@ -23,8 +22,5 @@ app.use(PrimeVue, {
         }
     }
 })
-
-const auth = useAuthStore()
-auth.attempt() // Initializes user values
 
 app.mount('#app')

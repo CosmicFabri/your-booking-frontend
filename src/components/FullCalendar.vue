@@ -19,9 +19,10 @@ export default {
   },
   methods: {
     handleDateClick: function(arg) {
-      alert('date click! ' + arg.dateStr)
+      this.$emit('dateClick', arg.dateStr)
     }
-  }
+  },
+  emits: ['dateClick']
 }
 </script>
 

@@ -1,27 +1,36 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { fetchData } from '@/utils/api';
-
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import FullCalendar from '@/components/FullCalendar.vue';
 import BookRow from '@/components/admin/BookRow.vue';
 
-const bookings = ref([
-    {
-        number: 1,
-        space: 'CIC-1',
-        user: 'José Aguilar Canepa',
-        date: '2025-02-27',
-        schedule: '09:00 - 11:00',
-    },
-    {
-        number: 2,
-        space: 'CIC-2',
-        date: '2025-02-28',
-        user: 'Justino Ramírez Ortegón',
-        schedule: '11:00 - 13:00',
+const selectedDate = ref('')
+const bookings = ref([])
+
+async function fetchBookings(day){
+    if (day == selectedDate.value) {
+        return
     }
-])
+
+    try {
+        bookings.value = await fetchData(`bookings/day/${day}`, 'GET')
+        selectedDate.value = day
+    } catch(error) {
+
+    }
+}
+
+onMounted(async () => {
+    const now = new Date();  
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const date = `${year}-${month}-${day}`
+
+    await fetchBookings(date) 
+})
+
 </script>
     <template>
         <div class="flex flex-row">
@@ -38,7 +47,7 @@ const bookings = ref([
                     
                     <!-- Bookings calendar -->
                     <div class="flex-2 min-w-[500px] max-w-[800px]">
-                        <FullCalendar></FullCalendar>
+                        <FullCalendar @date-click="fetchBookings"></FullCalendar>
                     </div>
 
                     <!-- Table showing the bookings of the date selected -->
@@ -58,11 +67,11 @@ const bookings = ref([
                         <BookRow
                             v-for="(booking, index) in bookings"
                             :key="booking.id"
-                            :book-number="booking.number"
-                            :book-space="booking.space"
-                            :book-user="booking.user"
-                            :book-date="booking.date"
-                            :book-schedule="booking.schedule"
+                            :book-number="booking.id"
+                            :book-space="booking.space_name"
+                            :book-user="booking.user_name"
+                            :book-date="booking.day"
+                            :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
                             :cell-width="32"
                             :index="index"
                         />

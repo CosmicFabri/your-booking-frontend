@@ -10,7 +10,10 @@ const spaces = ref([])
 const showDayPicker = ref(false)
 
 // For showing/hiding the calendar and form modal
-const showCalendarForm = ref(false)
+const showTimeCalendar = ref(false)
+
+// For showing/hiding the 'submit' button
+const showSubmitButton = ref(false)
 
 // For showing/hiding the 'success' modal
 // when submitting a new booking
@@ -28,18 +31,6 @@ const form = ref({
     schedule: {
         start: '',
         end: ''
-    }
-})
-
-// Available times for the schedule
-const availableStartTimes = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00']
-const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
-
-// Update the end time automatically when selecting the start hour
-watch(() => form.value.schedule.start, (newStart) => {
-    if (newStart) {
-        const startIndex = availableStartTimes.indexOf(newStart)
-        form.value.schedule.end = availableEndTimes[startIndex]
     }
 })
 
@@ -91,14 +82,22 @@ const closeShowDayPicker = () => {
     showDayPicker.value = false
 }
 
-const toggleShowCalendarForm = () => {
+const toggleShowTimeCalendar = () => {
     if (form.value.space) {
-        showCalendarForm.value = true
+        showTimeCalendar.value = true
     }
 }
 
-const closeShowCalendarForm = () => {
-    showCalendarForm.value = false
+const closeShowTimeCalendar = () => {
+    showTimeCalendar.value = false
+}
+
+const toggleShowSubmitButton = () => {
+    showSubmitButton.value = true
+}
+
+const closeShowSubmitButton = () => {
+    showSubmitButton.value = false
 }
 
 const toggleShowSuccessModal = () => {
@@ -106,7 +105,9 @@ const toggleShowSuccessModal = () => {
 }
 
 const closeShowSuccessModal = () => {
-    closeShowCalendarForm()
+    closeShowDayPicker()
+    closeShowTimeCalendar()
+    closeShowSubmitButton()
     showSuccessModal.value = false
 }
 
@@ -117,6 +118,8 @@ const handleSubmit = async () => {
         user: form.value.user,
         date: form.value.date,
         schedule: {
+            // NOTICE: This will be the logic for retrieving the
+            // time picked in the FullCalendar
             start: form.value.schedule.start,
             end: form.value.schedule.end
         }
@@ -147,83 +150,61 @@ onMounted(fetchEverything)
         <!-- Sidebar -->
         <UserSidebar></UserSidebar>
 
-        <!-- Main form (book a space) -->
-        <form @submit.prevent="handleSubmit" class="flex flex-row gap-x-12">
-            <!-- Main view -->
-            <div class="flex flex-col pl-16 pt-12 gap-y-8">
-                <!-- Title -->
-                <div class="text-3xl font-semibold">Reservar</div>
-                <!-- Choose a space -->
-                <div class="flex flex-col gap-y-8">
+        <!-- Main view -->
+        <div class="flex flex-col pl-16 pt-12 gap-y-8 flex-1">
+            <!-- Title -->
+            <div class="text-3xl font-semibold">Reservar</div>
+
+            <div class="flex justify-center w-full">
+                <form @submit.prevent="handleSubmit" class="flex flex-row justify-center gap-x-20">
                     <!-- Choose a space -->
-                    <div class="flex flex-col gap-y-4">
-                        <span class="text-lg font-semibold">Espacio a reservar:</span>
-                        <select v-model="form.space" @change="toggleShowDayPicker"
-                            class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
-                            required>
-
-                            <option value="" disabled selected hidden>Seleccionar</option>
-                            <option v-for="space in spaces" :key="space.id" :value="space.name">
-                                {{ space.name }}
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Date -->
-                    <div v-if="showDayPicker" class="flex flex-row justify-between items-center gap-x-4">
-                        <label for="date" class="text-md font-semibold">Fecha:</label>
-                        <input v-model="form.date" @change="toggleShowCalendarForm" type="date" id="date" name="date"
-                            class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
-                            required>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex flex-col pt-20 pb-28 gap-y-4">
-                <!-- Calendar and the rest of components -->
-                <div v-if="showCalendarForm" class="flex flex-row flex-1 justify-center gap-x-16 -ml-12">
-                    <!-- Calendar -->
-                    <div class="w-[calc(35vw)]">
-                        <FullCalendar></FullCalendar>
-                    </div>
-
-                    <!-- Date, time and submit -->
-                    <div class="flex flex-col justify-between">
-                        <!-- Descriptive calendar text -->
-                        <span class="text-md text-red-600 font-semibold pt-16">
-                            < Horas ocupadas para el espacio</span>
-                        <div class="flex flex-col gap-y-6">
-                            <!-- Descriptive form text -->
-                            <span class="text-lg text-sky-600 font-semibold">Campos necesarios</span>
-
-                            <!-- Time -->
-                            <div class="flex flex-col gap-y-2">
-                                <span class="font-medium font-semibold">Horario:</span>
-                                <div class="flex items-center gap-x-2">
-                                    <label for="start">De:</label>
-                                    <select v-model="form.schedule.start" id="start" name="start"
-                                        class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
-                                        required>
-                                        <option v-for="time in availableStartTimes" :key="time">{{ time }}
-                                        </option>
-                                    </select>
-                                    <label for="end">A:</label>
-                                    <input v-model="form.schedule.end" type="text" id="end" name="end"
-                                        class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 w-24 focus:outline-none"
-                                        disabled>
-                                </div>
+                    <div class="flex flex-col justify-around">
+                        <div class="flex flex-col gap-y-8">
+                            <div class="flex flex-col gap-y-4">
+                                <span class="text-lg font-semibold">Espacio a reservar:</span>
+                                <select v-model="form.space" @change="toggleShowDayPicker"
+                                    class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
+                                    required>
+                                    <option value="" disabled selected hidden>Seleccionar</option>
+                                    <option v-for="space in spaces" :key="space.id" :value="space.name">
+                                        {{ space.name }}
+                                    </option>
+                                </select>
                             </div>
+    
+                            <!-- Date -->
+                            <div v-if="showDayPicker" class="flex flex-row justify-between items-center gap-x-4">
+                                <label for="date" class="text-md font-semibold">Fecha:</label>
+                                <input v-model="form.date" @change="toggleShowTimeCalendar" type="date" id="date" name="date"
+                                    class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
+                                    required>
+                            </div>
+                        </div>
 
-                            <!-- Submit button -->
-                            <button type="submit"
-                                class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
-                                Reservar espacio
-                            </button>
+                        <!-- Submit button -->
+                        <button v-if="showSubmitButton" type="submit"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
+                            Reservar espacio
+                        </button>
+                    </div>
+
+                    <!-- Calendar (hours) and the rest of components -->
+                    <div v-if="showTimeCalendar" class="flex flex-col">
+                        <div class="flex flex-col gap-y-4 max-w-fit">
+                            <!-- Descriptive text -->
+                            <span class="text-xl text-sky-600 font-semibold">
+                                Elija una hora de inicio:
+                            </span>
+
+                            <!-- Calendar (hours) -->
+                            <div class="w-[30vw] mx-auto">
+                                <FullCalendar @date-click="toggleShowSubmitButton"></FullCalendar>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
     <!-- Success submitting booking modal -->

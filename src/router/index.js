@@ -72,6 +72,9 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
     const auth = useAuthStore()
+    if(!auth.isAuthResolved) {
+        await auth.attempt()
+    }
 
     if(to.path === '/') {
         if(auth.isAuthenticated) {

@@ -10,7 +10,7 @@ const form = reactive({
 
 const submitLogin = async () => {
     try {
-        const data = auth.login(form.email, form.password)
+        const data = await auth.login(form.email, form.password)
         console.log(data)
     } catch (error) {
         console.error(error)

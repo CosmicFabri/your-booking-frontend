@@ -12,10 +12,17 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
+        dateClick: this.handleDateClick,
         weekends: false,
       }
     }
-  }
+  },
+  methods: {
+    handleDateClick: function(arg) {
+      this.$emit('dateClick', arg.dateStr)
+    }
+  },
+  emits: ['dateClick']
 }
 </script>
 

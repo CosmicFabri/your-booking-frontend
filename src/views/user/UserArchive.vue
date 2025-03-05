@@ -1,8 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { Paginator } from 'primevue';
+import { useAuthStore } from '@/stores/auth';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
+
+const auth = useAuthStore()
+const username = ref(auth.user.name)
 
 // Total bookings to show on pagination
 const bookings = ref([])
@@ -41,7 +45,7 @@ onMounted(async () => {
 <template>
     <div class="flex flex-row">
         <!-- Sidebar -->
-        <UserSidebar></UserSidebar>
+        <UserSidebar :username="username"></UserSidebar>
 
         <!-- Main view -->
         <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">

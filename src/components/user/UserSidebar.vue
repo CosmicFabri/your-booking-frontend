@@ -2,6 +2,10 @@
 import { RouterLink, useRoute } from 'vue-router';
 import Button from '../Button.vue';
 
+defineProps({
+    username: String
+})
+
 const isActiveLink = (routePath) => {
     const route = useRoute() // Current route path we're in
     return route.path === routePath
@@ -11,7 +15,7 @@ const isActiveLink = (routePath) => {
 <template>
     <div class="flex flex-col pl-6 pr-12 py-8 bg-gray-200 justify-between w-48 h-[calc(100vh-7rem)] shadow-xl">
         <div class="absolute text-xl font-semibold text-sky-600">
-            [username]
+            {{username}}
         </div>
         <div class="flex flex-col gap-y-4 mt-12">
             <RouterLink :class="[isActiveLink('/user/bookings') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',

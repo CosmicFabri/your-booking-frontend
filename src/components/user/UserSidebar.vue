@@ -1,11 +1,21 @@
 <script setup>
 import { ref } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import Button from '../Button.vue';
 
 const auth = useAuthStore()
+const router = useRouter()
 const username = ref(auth.user.name)
+
+const logout = async () => {
+    try {
+        await auth.logout()
+        router.push({ name: 'login' })
+    } catch (error) {
+
+    }
+}
 
 const isActiveLink = (routePath) => {
     const route = useRoute() // Current route path we're in
@@ -29,7 +39,7 @@ const isActiveLink = (routePath) => {
         <div class="p-4">
             <Button
                 :text="'Salir'"
-                :to="'/'"
+                @click="logout"
                 :font-size="'2xl'"
                 :color="'red'"
             ></Button>

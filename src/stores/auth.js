@@ -42,8 +42,10 @@ export const useAuthStore = defineStore('auth', () => {
     // Retrieve user info from backend
     const attempt = async () => {
         try {
-            const data = await fetchData('user', 'GET')
-            user.value = data
+            if(token.value){
+                const data = await fetchData('user', 'GET')
+                user.value = data
+            }
         } catch (error) {
             user.value = {}
             localStorage.removeItem('token') // Helps when token no longer exists in database

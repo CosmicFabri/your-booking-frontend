@@ -6,7 +6,7 @@ import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
 
 const bookings = ref([])
-const currentPage = ref(1)
+const currentPage = ref(0)
 const totalPages = ref(1)
 
 async function fetchBookings(page) {
@@ -18,8 +18,8 @@ async function fetchBookings(page) {
     }
 }
 
-watch(currentPage, async (oldPage, newPage) => {
-    await fetchBookings(newPage)
+watch(currentPage, async (newPage) => {
+    await fetchBookings(newPage + 1)
 })
 
 onMounted(async () => {
@@ -28,6 +28,8 @@ onMounted(async () => {
         
         totalPages.value = response.last_page
         bookings.value = response.data
+        console.log(currentPage.value)
+        console.log(totalPages.value)
     } catch (error) {
 
     }

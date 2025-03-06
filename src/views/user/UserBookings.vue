@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
+import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
 import Button from '@/components/Button.vue';
@@ -10,48 +11,58 @@ const bookings = ref([])
 // Spaces retrieved
 const spaces = ref([])
 
-// Number of total records loaded
-const records = ref(0)
-
 // ID of the selected booking to edit
-const selectedBookId = ref(null)
+const selectedBookId = ref('')
+const bookingSpaceId = ref('')
 
 // For opening/closing the 'edit booking' modal
 const openEditBooking = ref(false)
 
-// Values we're updating in the form
-const form = ref({
-    space: '',
-    user: '',
-    date: '',
-    schedule: {
-        start: '',
-        end: ''
-    }
-})
 
-// Available times for the schedule
-const availableStartTimes = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00']
-const availableEndTimes = ['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
+// Values for DayCalendar
+const selectedDay = ref([])
+const spaceDisponibility = ref([])
+const unavailableHours = ref([])
+const selectedSchedule = ref([])
 
-const toggleEditModal = (id) => {
+const toggleEditModal = async (id) => {
     selectedBookId.value = id
 
     const selectedBooking = bookings.value.find(booking => booking.id === id)
     if (selectedBooking) {
-        form.value = {
-            space: selectedBooking.space,
-            user: selectedBooking.user, // Preserve the user name
-            date: selectedBooking.date,
-            schedule: { 
-                start: selectedBooking.schedule.start, 
-                end: selectedBooking.schedule.end 
-            }
-        }
+        selectedDay.value = booking.day
+        bookingSpaceId.value = booking.space_id
+
+        await fetchSpaceDisponibility()
+        await fetchUnavailableHours()
     }
 
-    retrieveSpaces()
     openEditBooking.value = true
+}
+
+const fetchSpaceDisponibility = async () => {
+    try {
+        const space = await fetchData(`spaces/${bookingSpaceId.value}`)
+        spaceDisponibility.value = [space.disponibility.start, space.disponibility.end]
+    } catch (error) {
+
+    }
+}
+
+const fetchUnavailableHours = async () => {
+    try {
+        const repsonse = await fetchData(`bookings/hours?idSpace=${bookingSpaceId.value}&day=${selectedDay.value}`)
+        // Converting to the event format that FullCalendar expects
+        unavailableHours.value = Array.from(response, (element) => {
+            return {
+                title: '', 
+                start: `${selectedDay.value}T${element.start_hour}`, 
+                end: `${selectedDay.value}T${element.end_hour}`
+            }
+        })
+    } catch (error) {
+
+    }
 }
 
 const closeEditModal = () => {
@@ -59,26 +70,10 @@ const closeEditModal = () => {
     openEditBooking.value = false
 }
 
-const retrieveSpaces = async () => {
-    try {
-        const response = await fetch('http://localhost:5000/spaces')
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-        spaces.value = await response.json()
-    } catch (error) {
-        console.error('Error fetching spaces', error)
-    }
-}
-
 const fetchBookings = async () => {
     try {
-        const response = await fetch('http://localhost:5000/joseBookings')
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-        bookings.value = await response.json()
-        records.value = bookings.value.length
+        const response = await fetchData('bookings/user/pending', 'GET')
+        bookings.value = response
     } catch (error) {
         console.error('Error fetching bookings', error)
     }
@@ -105,13 +100,7 @@ const handleSubmit = async (id) => {
 
 const handleCancellation = async (id) => {
     try {
-        const response = await fetch(`http://localhost:5000/joseBookings/${id}`, {
-            method: 'DELETE'
-        })
-
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`)
-        }
+        const response = await fetchData(`bookings/${id}`, 'DELETE')
 
         await fetchBookings()
         closeEditModal()
@@ -119,14 +108,6 @@ const handleCancellation = async (id) => {
         console.error(`Error cancelling booking with id ${id}`, error)
     }
 }
-
-// Update the end time automatically when selecting the start hour
-watch(() => form.value.schedule.start, (newStart) => {
-    if (newStart) {
-        const startIndex = availableStartTimes.indexOf(newStart)
-        form.value.schedule.end = availableEndTimes[startIndex]
-    }
-})
 
 onMounted(fetchBookings)
 </script>
@@ -156,14 +137,14 @@ onMounted(fetchBookings)
                 <div v-for="(booking, index) in bookings" :key="booking.id" class="flex flex-row gap-x-8 relative">
                     <BookRow
                         :book-id="parseInt(booking.id)"
-                        :book-space="booking.space"
-                        :book-user="booking.user"
-                        :book-date="booking.date"
-                        :book-schedule="`${booking.schedule.start} - ${booking.schedule.end}`"
+                        :book-space="booking.space_name"
+                        :book-user="booking.user_name"
+                        :book-date="booking.day"
+                        :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
                         :index="index"
                         class="mx-auto"
                     />
-                    <button
+                    <button v-if="booking.editable"
                         @click="toggleEditModal(booking.id)"
                         class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-1 px-2
                         rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 

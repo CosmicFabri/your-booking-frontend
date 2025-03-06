@@ -1,14 +1,33 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
-import FullCalendar from '@/components/FullCalendar.vue';
+import DayCalendar from '@/components/DayCalendar.vue';
 
 const auth = useAuthStore()
 const username = ref(auth.user.name)
 
 // Spaces for our select element
 const spaces = ref([])
+
+// Returns an object with space.id as keys and an array of disponibility as values
+const spacesDisponibility = computed(() => {
+    return spaces.value.reduce((acc, space) => {
+        acc[space.id] = [space.disponibility.start, space.disponibility.end]
+        return acc
+    },{})
+})
+
+// Structure of the new booking
+const form = ref({
+    id_space: '',
+    day: '',
+    schedule: {
+        start: '',
+        end: ''
+    }
+})
 
 // For showing/hiding the day picker
 const showDayPicker = ref(false)
@@ -26,55 +45,15 @@ const showSuccessModal = ref(false)
 // ID of the last booking
 const lastBookingId = ref(null)
 
-// Structure of the new booking
-const form = ref({
-    id: { type: Number },
-    space: '',
-    user: 'José Aguilar Canepa',
-    date: '',
-    schedule: {
-        start: '',
-        end: ''
-    }
-})
 
-// For fetching spaces, bookings and the last booking ID
-const fetchEverything = async () => {
-    fetchSpaces()
-    fetchLastId()
-}
+
 
 const fetchSpaces = async () => {
     try {
-        const response = await fetch('http://localhost:5000/spaces');
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        spaces.value = await response.json()
+        spaces.value = await fetchData('spaces', 'GET')
+        console.log(spacesDisponibility.value)
     } catch (error) {
         console.error('Error fetching spaces', error)
-    }
-}
-
-const fetchLastId = async () => {
-    try {
-        const response = await fetch('http://localhost:5000/joseBookings')
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        const json = await response.json()
-
-        if (json.length > 0) {
-            lastBookingId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
-        } else {
-            lastBookingId.value = null
-        }
-
-        console.log(lastBookingId.value)
-    } catch (error) {
-        console.error('Error fetching last booking ID', error)
     }
 }
 
@@ -87,7 +66,7 @@ const closeShowDayPicker = () => {
 }
 
 const toggleShowTimeCalendar = () => {
-    if (form.value.space) {
+    if (form.value.id_space) {
         showTimeCalendar.value = true
     }
 }
@@ -117,7 +96,6 @@ const closeShowSuccessModal = () => {
 
 const handleSubmit = async () => {
     const newBooking = {
-        id: String(lastBookingId.value ? lastBookingId.value + 1 : 1), // Ensure ID is unique
         space: form.value.space,
         user: form.value.user,
         date: form.value.date,
@@ -146,7 +124,9 @@ const handleSubmit = async () => {
     }
 }
 
-onMounted(fetchEverything)
+onMounted( async () => {
+    await fetchSpaces()
+})
 </script>
 
 <template>
@@ -166,11 +146,11 @@ onMounted(fetchEverything)
                         <div class="flex flex-col gap-y-8">
                             <div class="flex flex-col gap-y-4">
                                 <span class="text-lg font-semibold">Espacio a reservar:</span>
-                                <select v-model="form.space" @change="toggleShowDayPicker"
+                                <select v-model="form.id_space" @change="toggleShowDayPicker"
                                     class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
                                     required>
                                     <option value="" disabled selected hidden>Seleccionar</option>
-                                    <option v-for="space in spaces" :key="space.id" :value="space.name">
+                                    <option v-for="space in spaces" :key="space.id" :value="space.id">
                                         {{ space.name }}
                                     </option>
                                 </select>
@@ -202,7 +182,9 @@ onMounted(fetchEverything)
 
                             <!-- Calendar (hours) -->
                             <div class="w-[30vw] mx-auto">
-                                <FullCalendar @date-click="toggleShowSubmitButton"></FullCalendar>
+                                <DayCalendar 
+                                    @date-click="toggleShowSubmitButton"
+                                    :space-disponibility="spacesDisponibility[form.id_space]"></DayCalendar>
                             </div>
                         </div>
                     </div>

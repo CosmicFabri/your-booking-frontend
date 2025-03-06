@@ -1,39 +1,35 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Paginator } from 'primevue';
+import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
 
-// Total bookings to show on pagination
 const bookings = ref([])
+const currentPage = ref(1)
+const totalPages = ref(1)
 
-// Total number of records loaded
-const records = ref(0)
+async function fetchBookings(page) {
+    try {
+        const response = await fetchData(`bookings/user?page=${page}`, 'GET')
+        bookings.value = response.data
+    } catch (error) {
 
-// Start index for the pagination
-const first = ref(0)
+    }
+}
 
-// Show 3 records per page
-const rows = ref(3)
-
-const paginatedBookings = computed(() => {
-    return bookings.value.slice(first.value, first.value + rows.value);
+watch(currentPage, async (oldPage, newPage) => {
+    await fetchBookings(newPage)
 })
 
 onMounted(async () => {
     try {
-        const response = await fetch('http://localhost:5000/joseBookings')
-        if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
-        }
-
-        const json = await response.json();
-        const jsonStr = JSON.stringify(json)
-
-        bookings.value = JSON.parse(jsonStr)
-        records.value = bookings.value.length
+        const response = await fetchData('bookings/user?page=1', 'GET')
+        
+        totalPages.value = response.last_page
+        bookings.value = response.data
     } catch (error) {
-        console.error('Error fetching bookings', error)
+
     }
 })
 </script>
@@ -62,13 +58,13 @@ onMounted(async () => {
 
                 <!-- Table contents -->
                 <BookRow
-                    v-for="(booking, index) in paginatedBookings"
+                    v-for="(booking, index) in bookings"
                     :key="booking.id"
                     :book-id="parseInt(booking.id)"
-                    :book-space="booking.space"
-                    :book-user="booking.user"
-                    :book-date="booking.date"
-                    :book-schedule="`${booking.schedule.start} - ${booking.schedule.end}`"
+                    :book-space="booking.space_name"
+                    :book-user="booking.user_name"
+                    :book-date="booking.day"
+                    :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
                     :index="index"
                     class="mx-auto"
                 />
@@ -76,9 +72,9 @@ onMounted(async () => {
 
             <!-- Paginator component -->
             <Paginator
-                v-model:first="first"
-                :rows="3" 
-                :total-records="records">
+                v-model:first="currentPage"
+                :rows="1" 
+                :total-records="totalPages">
             </Paginator>
         </div>
     </div>

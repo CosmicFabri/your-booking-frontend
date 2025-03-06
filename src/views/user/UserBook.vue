@@ -1,148 +1,121 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
-import FullCalendar from '@/components/FullCalendar.vue';
+import DayCalendar from '@/components/DayCalendar.vue';
 
 // Spaces for our select element
 const spaces = ref([])
 
-// For showing/hiding the day picker
-const showDayPicker = ref(false)
-
-// For showing/hiding the calendar and form modal
-const showTimeCalendar = ref(false)
-
-// For showing/hiding the 'submit' button
-const showSubmitButton = ref(false)
-
-// For showing/hiding the 'success' modal
-// when submitting a new booking
-const showSuccessModal = ref(false)
-
-// ID of the last booking
-const lastBookingId = ref(null)
-
-// Structure of the new booking
-const form = ref({
-    id: { type: Number },
-    space: '',
-    user: 'José Aguilar Canepa',
-    date: '',
-    schedule: {
-        start: '',
-        end: ''
-    }
+// Returns an object with space.id as keys and an array of disponibility as values
+const spacesDisponibility = computed(() => {
+    return spaces.value.reduce((acc, space) => {
+        acc[space.id] = [space.disponibility.start, space.disponibility.end]
+        return acc
+    },{})
 })
 
-// For fetching spaces, bookings and the last booking ID
-const fetchEverything = async () => {
-    fetchSpaces()
-    fetchLastId()
+// Values for the request
+const selectedSpace = ref(0) // Holds the id of the space
+const selectedDay = ref('')
+const selectedSchedule = ref([])
+
+const unavailableHours = ref([])
+
+// Since we store selectedSpace as the index, a computed variable for the name is needed
+const spaceName = computed(() => {
+    const index = spaces.value.findIndex((space) => space.id === selectedSpace.value)
+    return spaces.value[index].name
+})
+
+const showDayPicker = computed(() => selectedSpace.value !== 0) // True if a space has been selected
+const showTimeCalendar = ref(false)
+const showSubmitButton = ref(false)
+
+const onSpaceChanged = () => {
+    showTimeCalendar.value = false
+    showSubmitButton.value = false
+    selectedDay.value = ''
+    selectedSchedule.value = []
+    unavailableHours.value = []
 }
+
+const onDayChanged = async () => {
+    showSubmitButton.value = false
+    showTimeCalendar.value = false
+    
+    unavailableHours.value = []
+    
+    await fetchUnavailableHours()
+
+    showTimeCalendar.value = true
+}
+
+const fetchUnavailableHours = async () => {
+    try {
+        const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${selectedDay.value}`)
+        
+        // Converting to the event format that FullCalendar expects
+        unavailableHours.value = Array.from(response, (element) => {
+            return {
+                title: '', 
+                start: `${selectedDay.value}T${element.start_hour}`, 
+                end: `${selectedDay.value}T${element.end_hour}`
+            }
+        })
+    } catch (error) {
+
+    }
+}
+
+const getHourSelection = (start, end) => {
+    selectedSchedule.value = [start, end]
+    showSubmitButton.value = true
+}
+
+const handleUnselection = () => {
+    showSubmitButton.value = false
+    selectedSchedule.value = []
+}
+
+const showSuccessModal = ref(false)
+
 
 const fetchSpaces = async () => {
     try {
-        const response = await fetch('http://localhost:5000/spaces');
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        spaces.value = await response.json()
+        spaces.value = await fetchData('spaces', 'GET')
     } catch (error) {
         console.error('Error fetching spaces', error)
     }
 }
 
-const fetchLastId = async () => {
-    try {
-        const response = await fetch('http://localhost:5000/joseBookings')
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        const json = await response.json()
-
-        if (json.length > 0) {
-            lastBookingId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
-        } else {
-            lastBookingId.value = null
-        }
-
-        console.log(lastBookingId.value)
-    } catch (error) {
-        console.error('Error fetching last booking ID', error)
-    }
-}
-
-const toggleShowDayPicker = () => {
-    showDayPicker.value = true
-}
-
-const closeShowDayPicker = () => {
-    showDayPicker.value = false
-}
-
-const toggleShowTimeCalendar = () => {
-    if (form.value.space) {
-        showTimeCalendar.value = true
-    }
-}
-
-const closeShowTimeCalendar = () => {
-    showTimeCalendar.value = false
-}
-
-const toggleShowSubmitButton = () => {
-    showSubmitButton.value = true
-}
-
-const closeShowSubmitButton = () => {
-    showSubmitButton.value = false
-}
-
-const toggleShowSuccessModal = () => {
-    showSuccessModal.value = true
-}
-
 const closeShowSuccessModal = () => {
-    closeShowDayPicker()
-    closeShowTimeCalendar()
-    closeShowSubmitButton()
+    showSubmitButton.value = false
+    showTimeCalendar.value = false
+    selectedSpace.value = 0
     showSuccessModal.value = false
 }
 
 const handleSubmit = async () => {
-    const newBooking = {
-        id: String(lastBookingId.value ? lastBookingId.value + 1 : 1), // Ensure ID is unique
-        space: form.value.space,
-        user: form.value.user,
-        date: form.value.date,
-        schedule: {
-            // NOTICE: This will be the logic for retrieving the
-            // time picked in the FullCalendar
-            start: form.value.schedule.start,
-            end: form.value.schedule.end
-        }
+    const body = {
+        id_space: selectedSpace.value,
+        day: selectedDay.value,
+        start_hour: selectedSchedule.value[0],
+        end_hour: selectedSchedule.value[1]
     }
 
     try {
-        const response = await fetch('http://localhost:5000/joseBookings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newBooking)
-        })
+        const response = await fetchData('bookings', 'POST', body)
 
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        toggleShowSuccessModal()
+        showSuccessModal.value = true
     } catch (error) {
-        console.error(`Error submitting booking with id ${newBooking.id}`, error)
+        
     }
 }
 
-onMounted(fetchEverything)
+onMounted( async () => {
+    await fetchSpaces()
+})
 </script>
 
 <template>
@@ -162,11 +135,11 @@ onMounted(fetchEverything)
                         <div class="flex flex-col gap-y-8">
                             <div class="flex flex-col gap-y-4">
                                 <span class="text-lg font-semibold">Espacio a reservar:</span>
-                                <select v-model="form.space" @change="toggleShowDayPicker"
+                                <select v-model="selectedSpace" @change="onSpaceChanged"
                                     class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
                                     required>
                                     <option value="" disabled selected hidden>Seleccionar</option>
-                                    <option v-for="space in spaces" :key="space.id" :value="space.name">
+                                    <option v-for="space in spaces" :key="space.id" :value="space.id">
                                         {{ space.name }}
                                     </option>
                                 </select>
@@ -175,7 +148,7 @@ onMounted(fetchEverything)
                             <!-- Date -->
                             <div v-if="showDayPicker" class="flex flex-row justify-between items-center gap-x-4">
                                 <label for="date" class="text-md font-semibold">Fecha:</label>
-                                <input v-model="form.date" @change="toggleShowTimeCalendar" type="date" id="date" name="date"
+                                <input v-model="selectedDay" @change="onDayChanged" type="date" id="date" name="date"
                                     class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
                                     required>
                             </div>
@@ -193,12 +166,19 @@ onMounted(fetchEverything)
                         <div class="flex flex-col gap-y-4 max-w-fit">
                             <!-- Descriptive text -->
                             <span class="text-xl text-sky-600 font-semibold">
-                                Elija una hora de inicio:
+                                Arrastre el puntero para elegir el horario:
                             </span>
 
                             <!-- Calendar (hours) -->
                             <div class="w-[30vw] mx-auto">
-                                <FullCalendar @date-click="toggleShowSubmitButton"></FullCalendar>
+                                <!-- :key attribute forces this component to re-renderize when the value changes -->
+                                <DayCalendar 
+                                    @select="getHourSelection"
+                                    @unselect="handleUnselection"
+                                    :key="selectedDay"
+                                    :initial-date="selectedDay"
+                                    :space-disponibility="spacesDisponibility[selectedSpace]"
+                                    :events="unavailableHours"></DayCalendar>
                             </div>
                         </div>
                     </div>
@@ -217,8 +197,8 @@ onMounted(fetchEverything)
                 <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
             </div>
             <div class="text-md text-justify">
-                Su reservación en el espacio {{ form.space }} a las
-                {{ form.schedule.start }} horas con fecha {{ form.date }}
+                Su reservación en el espacio {{ spaceName }} a las
+                {{ selectedSchedule[0] }} horas con fecha {{ selectedDay }}
                 ha sido agregada exitosamente.
             </div>
             <button @click="closeShowSuccessModal"

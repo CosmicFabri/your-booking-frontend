@@ -14,6 +14,11 @@ export default {
             type: Object,
             required: true,
             default : ['07:00', '21:00']
+        },
+        events: {
+            type: Object,
+            required: true,
+            default: []
         }
     }, 
     components: {
@@ -37,6 +42,9 @@ export default {
                 slotMaxTime: this.spaceDisponibility[1],
                 slotDuration: '01:00:00',
                 slotEventOverlap: false,
+                events: this.events,
+                unselectAuto: false,    // Prevents unselection if clicked outside of the calendar
+                selectOverlap: false, // Prevents selection over unavailableHours
                 expandRows: true
             }
         }

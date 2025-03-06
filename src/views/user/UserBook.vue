@@ -45,17 +45,31 @@ const onSpaceChanged = () => {
     selectedSchedule.value = []
 }
 
-const onDayChanged = () => {
+const onDayChanged = async () => {
     showSubmitButton.value = false
-    showTimeCalendar.value = false
-    // Fetch availability for spaces
+    // showTimeCalendar.value = false
+    
+    await fetchUnavailableHours()
+    console.log(unavailableHours.value)
 
-    // Show DayCalendar component
     showTimeCalendar.value = true
 }
 
-const getUnavailableHours = async () => {
+const fetchUnavailableHours = async () => {
+    try {
+        const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${selectedDay.value}`)
+        
+        // Converting to the event format that FullCalendar expects
+        unavailableHours.value = Array.from(response, (element) => {
+            return {
+                title: '', 
+                start: `${selectedDay.value}T${element.start_hour}`, 
+                end: `${selectedDay.value}T${element.end_hour}`
+            }
+        })
+    } catch (error) {
 
+    }
 }
 
 const getHourSelection = (start, end) => {
@@ -76,7 +90,6 @@ const showSuccessModal = ref(false)
 const fetchSpaces = async () => {
     try {
         spaces.value = await fetchData('spaces', 'GET')
-        console.log(spacesDisponibility.value)
     } catch (error) {
         console.error('Error fetching spaces', error)
     }
@@ -172,7 +185,7 @@ onMounted( async () => {
                         <div class="flex flex-col gap-y-4 max-w-fit">
                             <!-- Descriptive text -->
                             <span class="text-xl text-sky-600 font-semibold">
-                                Elija una hora de inicio:
+                                Arrastre el puntero para elegir el horario:
                             </span>
 
                             <!-- Calendar (hours) -->
@@ -183,7 +196,8 @@ onMounted( async () => {
                                     @unselect="handleUnselection"
                                     :key="selectedDay"
                                     :initial-date="selectedDay"
-                                    :space-disponibility="spacesDisponibility[form.id_space]"></DayCalendar>
+                                    :space-disponibility="spacesDisponibility[form.id_space]"
+                                    :events="unavailableHours"></DayCalendar>
                             </div>
                         </div>
                     </div>
@@ -202,8 +216,8 @@ onMounted( async () => {
                 <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
             </div>
             <div class="text-md text-justify">
-                Su reservación en el espacio {{ form.space }} a las
-                {{ form.schedule.start }} horas con fecha {{ form.date }}
+                Su reservación en el espacio {{ selectedSpace }} a las
+                {{ selectedSchedule[0] }} horas con fecha {{ selectedDay }}
                 ha sido agregada exitosamente.
             </div>
             <button @click="closeShowSuccessModal"

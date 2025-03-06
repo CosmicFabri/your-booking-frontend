@@ -1,12 +1,8 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
 import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import DayCalendar from '@/components/DayCalendar.vue';
-
-const auth = useAuthStore()
-const username = ref(auth.user.name)
 
 // Spaces for our select element
 const spaces = ref([])
@@ -125,7 +121,7 @@ onMounted( async () => {
 <template>
     <div class="flex flex-row">
         <!-- Sidebar -->
-        <UserSidebar :username="username"></UserSidebar>
+        <UserSidebar></UserSidebar>
 
         <!-- Main view -->
         <div class="flex flex-col pl-16 pt-12 gap-y-8 flex-1">

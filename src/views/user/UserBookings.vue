@@ -1,12 +1,8 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import BookRow from '@/components/user/BookRow.vue';
 import Button from '@/components/Button.vue';
-
-const auth = useAuthStore()
-const username = ref(auth.user.name)
 
 // Total bookings to show
 const bookings = ref([])
@@ -138,7 +134,7 @@ onMounted(fetchBookings)
 <template>
     <div class="flex flex-row">
         <!-- Sidebar -->
-        <UserSidebar :username="username"></UserSidebar>
+        <UserSidebar></UserSidebar>
 
         <!-- Main view -->
         <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">

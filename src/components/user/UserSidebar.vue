@@ -1,10 +1,11 @@
 <script setup>
+import { ref } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import Button from '../Button.vue';
 
-defineProps({
-    username: String
-})
+const auth = useAuthStore()
+const username = ref(auth.user.name)
 
 const isActiveLink = (routePath) => {
     const route = useRoute() // Current route path we're in

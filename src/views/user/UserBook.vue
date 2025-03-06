@@ -19,20 +19,18 @@ const spacesDisponibility = computed(() => {
     },{})
 })
 
-// Structure of the booking post request
-const form = ref({
-    id_space: '',
-    day: '',
-    schedule: {
-        start: '',
-        end: ''
-    }
-})
-
+// Values for the request
 const selectedSpace = ref(0) // Holds the id of the space
 const selectedDay = ref('')
 const selectedSchedule = ref([])
+
 const unavailableHours = ref([])
+
+// Since we store selectedSpace as the index, a computed variable for the name is needed
+const spaceName = computed(() => {
+    const index = spaces.value.findIndex((space) => space.id === selectedSpace.value)
+    return spaces.value[index].name
+})
 
 const showDayPicker = computed(() => selectedSpace.value !== 0) // True if a space has been selected
 const showTimeCalendar = ref(false)
@@ -43,14 +41,16 @@ const onSpaceChanged = () => {
     showSubmitButton.value = false
     selectedDay.value = ''
     selectedSchedule.value = []
+    unavailableHours.value = []
 }
 
 const onDayChanged = async () => {
     showSubmitButton.value = false
-    // showTimeCalendar.value = false
+    showTimeCalendar.value = false
+    
+    unavailableHours.value = []
     
     await fetchUnavailableHours()
-    console.log(unavailableHours.value)
 
     showTimeCalendar.value = true
 }
@@ -74,8 +74,6 @@ const fetchUnavailableHours = async () => {
 
 const getHourSelection = (start, end) => {
     selectedSchedule.value = [start, end]
-    alert(selectedSchedule.value)
-
     showSubmitButton.value = true
 }
 
@@ -103,32 +101,19 @@ const closeShowSuccessModal = () => {
 }
 
 const handleSubmit = async () => {
-    const newBooking = {
-        space: form.value.space,
-        user: form.value.user,
-        date: form.value.date,
-        schedule: {
-            // NOTICE: This will be the logic for retrieving the
-            // time picked in the FullCalendar
-            start: form.value.schedule.start,
-            end: form.value.schedule.end
-        }
+    const body = {
+        id_space: selectedSpace.value,
+        day: selectedDay.value,
+        start_hour: selectedSchedule.value[0],
+        end_hour: selectedSchedule.value[1]
     }
 
     try {
-        const response = await fetch('http://localhost:5000/joseBookings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newBooking)
-        })
+        const response = await fetchData('bookings', 'POST', body)
 
-        if (!response.ok) {
-            throw new Error(`Error: ${response.status}`)
-        }
-
-        toggleShowSuccessModal()
+        showSuccessModal.value = true
     } catch (error) {
-        console.error(`Error submitting booking with id ${newBooking.id}`, error)
+        
     }
 }
 
@@ -196,7 +181,7 @@ onMounted( async () => {
                                     @unselect="handleUnselection"
                                     :key="selectedDay"
                                     :initial-date="selectedDay"
-                                    :space-disponibility="spacesDisponibility[form.id_space]"
+                                    :space-disponibility="spacesDisponibility[selectedSpace]"
                                     :events="unavailableHours"></DayCalendar>
                             </div>
                         </div>
@@ -216,7 +201,7 @@ onMounted( async () => {
                 <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
             </div>
             <div class="text-md text-justify">
-                Su reservación en el espacio {{ selectedSpace }} a las
+                Su reservación en el espacio {{ spaceName }} a las
                 {{ selectedSchedule[0] }} horas con fecha {{ selectedDay }}
                 ha sido agregada exitosamente.
             </div>

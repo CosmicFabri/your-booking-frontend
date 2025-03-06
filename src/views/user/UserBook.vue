@@ -19,7 +19,7 @@ const spacesDisponibility = computed(() => {
     },{})
 })
 
-// Structure of the new booking
+// Structure of the booking post request
 const form = ref({
     id_space: '',
     day: '',
@@ -29,23 +29,48 @@ const form = ref({
     }
 })
 
-// For showing/hiding the day picker
-const showDayPicker = ref(false)
+const selectedSpace = ref(0) // Holds the id of the space
+const selectedDay = ref('')
+const selectedSchedule = ref([])
+const unavailableHours = ref([])
 
-// For showing/hiding the calendar and form modal
+const showDayPicker = computed(() => selectedSpace.value !== 0) // True if a space has been selected
 const showTimeCalendar = ref(false)
-
-// For showing/hiding the 'submit' button
 const showSubmitButton = ref(false)
 
-// For showing/hiding the 'success' modal
-// when submitting a new booking
+const onSpaceChanged = () => {
+    showTimeCalendar.value = false
+    showSubmitButton.value = false
+    selectedDay.value = ''
+    selectedSchedule.value = []
+}
+
+const onDayChanged = () => {
+    showSubmitButton.value = false
+    showTimeCalendar.value = false
+    // Fetch availability for spaces
+
+    // Show DayCalendar component
+    showTimeCalendar.value = true
+}
+
+const getUnavailableHours = async () => {
+
+}
+
+const getHourSelection = (start, end) => {
+    selectedSchedule.value = [start, end]
+    alert(selectedSchedule.value)
+
+    showSubmitButton.value = true
+}
+
+const handleUnselection = () => {
+    showSubmitButton.value = false
+    selectedSchedule.value = []
+}
+
 const showSuccessModal = ref(false)
-
-// ID of the last booking
-const lastBookingId = ref(null)
-
-
 
 
 const fetchSpaces = async () => {
@@ -57,40 +82,10 @@ const fetchSpaces = async () => {
     }
 }
 
-const toggleShowDayPicker = () => {
-    showDayPicker.value = true
-}
-
-const closeShowDayPicker = () => {
-    showDayPicker.value = false
-}
-
-const toggleShowTimeCalendar = () => {
-    if (form.value.id_space) {
-        showTimeCalendar.value = true
-    }
-}
-
-const closeShowTimeCalendar = () => {
-    showTimeCalendar.value = false
-}
-
-const toggleShowSubmitButton = () => {
-    showSubmitButton.value = true
-}
-
-const closeShowSubmitButton = () => {
-    showSubmitButton.value = false
-}
-
-const toggleShowSuccessModal = () => {
-    showSuccessModal.value = true
-}
-
 const closeShowSuccessModal = () => {
-    closeShowDayPicker()
-    closeShowTimeCalendar()
-    closeShowSubmitButton()
+    showSubmitButton.value = false
+    showTimeCalendar.value = false
+    selectedSpace.value = 0
     showSuccessModal.value = false
 }
 
@@ -146,7 +141,7 @@ onMounted( async () => {
                         <div class="flex flex-col gap-y-8">
                             <div class="flex flex-col gap-y-4">
                                 <span class="text-lg font-semibold">Espacio a reservar:</span>
-                                <select v-model="form.id_space" @change="toggleShowDayPicker"
+                                <select v-model="selectedSpace" @change="onSpaceChanged"
                                     class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
                                     required>
                                     <option value="" disabled selected hidden>Seleccionar</option>
@@ -159,7 +154,7 @@ onMounted( async () => {
                             <!-- Date -->
                             <div v-if="showDayPicker" class="flex flex-row justify-between items-center gap-x-4">
                                 <label for="date" class="text-md font-semibold">Fecha:</label>
-                                <input v-model="form.date" @change="toggleShowTimeCalendar" type="date" id="date" name="date"
+                                <input v-model="selectedDay" @change="onDayChanged" type="date" id="date" name="date"
                                     class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
                                     required>
                             </div>
@@ -182,8 +177,12 @@ onMounted( async () => {
 
                             <!-- Calendar (hours) -->
                             <div class="w-[30vw] mx-auto">
+                                <!-- :key attribute forces this component to re-renderize when the value changes -->
                                 <DayCalendar 
-                                    @date-click="toggleShowSubmitButton"
+                                    @select="getHourSelection"
+                                    @unselect="handleUnselection"
+                                    :key="selectedDay"
+                                    :initial-date="selectedDay"
                                     :space-disponibility="spacesDisponibility[form.id_space]"></DayCalendar>
                             </div>
                         </div>

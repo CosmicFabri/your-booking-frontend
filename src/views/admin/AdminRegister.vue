@@ -1,9 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
+import { fetchData } from '@/utils/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
-
-// ID of the last user
-const lastUserId = ref(null)
 
 // For showing/hiding the 'success' modal
 // when submitting a new user to the system
@@ -20,66 +18,33 @@ const closeShowSuccessModal = () => {
 
 // Record we're gonna submit via POST
 const form = ref({
-  id: { type: Number },
   name: '',
   email: '',
   password: ''
 })
 
 const clearForm = () => {
-  form.value.id = null
   form.value.name = ''
   form.value.email = ''
   form.value.password = ''
 }
 
-const fetchUsers = async () => {
-  try {
-    const response = await fetch('http://localhost:5000/users')
-    if (!response.ok) {
-      console.log(`Response status: ${response.status}`)
-    }
-
-    const json = await response.json()
-
-    if (json.length > 0) {
-      lastUserId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
-    } else {
-      lastUserId.value = null
-    }
-
-    console.log(lastUserId.value)
-  } catch (error) {
-    console.error('Error fetching users', error)
-  }
-}
-
 const handleSubmit = async () => {
   const newUser = {
-    id: String(lastUserId.value ? lastUserId.value + 1 : 1), // Ensure ID is unique
+    role_id: 2,
     name: form.value.name,
     email: form.value.email,
     password: form.value.password
   }
 
   try {
-    const response = await fetch('http://localhost:5000/users', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(newUser)
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`)
-    }
+    const response = await fetchData('user', 'POST', newUser)
 
     toggleShowSuccessModal()
   } catch (error) {
-    console.error(`Error submitting user with ID ${newUser.id}`, error)
+    console.error('Error submitting user ', error)
   }
 }
-
-onMounted(fetchUsers)
 </script>
 
 <template>
@@ -133,7 +98,7 @@ onMounted(fetchUsers)
       @click.stop>
       <div class="flex flex-row items-center justify-center gap-x-4">
         <span class="pi pi-info-circle text-sky-600 font-semibold"></span>
-        <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
+        <span class="text-sky-600 text-lg font-semibold">Registro exitoso</span>
       </div>
       <div class="text-md text-justify">
         El usuario {{ form.name }} ha sido añadido

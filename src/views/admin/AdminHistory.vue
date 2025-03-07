@@ -53,7 +53,7 @@ onMounted(async () => {
                 <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
                     <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
                     <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Espacio</div>
-                    <div class="px-4 py-3 w-72 border-r border-sky-600 text-center">Usuario</div>
+                    <div class="px-4 py-3 w-80 border-r border-sky-600 text-center">Usuario</div>
                     <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Fecha</div>
                     <div class="px-4 py-3 w-48 text-center">Horario</div>
                 </div>

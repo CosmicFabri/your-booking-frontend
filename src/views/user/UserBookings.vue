@@ -113,12 +113,12 @@ onMounted(fetchBookings)
 </script>
 
 <template>
-    <div class="flex flex-row">
+    <div class="flex flex-row h-[calc(100vh-10rem)]">
         <!-- Sidebar -->
         <UserSidebar></UserSidebar>
 
         <!-- Main view -->
-        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
+        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8 overflow-auto">
 
             <!-- Title -->
             <div class="text-3xl font-semibold">Reservaciones</div>
@@ -127,18 +127,16 @@ onMounted(fetchBookings)
 
                 <!-- Table header -->
                 <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
-                    <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
-                    <div class="px-4 py-3 w-36 border-r border-sky-600 text-center">Espacio</div>
-                    <div class="px-4 py-3 w-72 border-r border-sky-600 text-center">Usuario</div>
-                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">Fecha</div>
-                    <div class="px-4 py-3 w-40 text-center">Horario</div>
+                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">No. Reservación</div>
+                    <div class="px-4 py-3 w-56 border-r border-sky-600 text-center">Espacio</div>
+                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Fecha</div>
+                    <div class="px-4 py-3 w-52 text-center">Horario</div>
                 </div>
 
                 <div v-for="(booking, index) in bookings" :key="booking.id" class="flex flex-row gap-x-8 relative">
                     <BookRow
                         :book-id="parseInt(booking.id)"
                         :book-space="booking.space_name"
-                        :book-user="booking.user_name"
                         :book-date="booking.day"
                         :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
                         :index="index"

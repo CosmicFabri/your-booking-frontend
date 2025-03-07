@@ -33,12 +33,12 @@ onMounted(async () => {
 
 </script>
     <template>
-        <div class="flex flex-row">
+        <div class="flex flex-row h-[calc(100vh-10rem)]">
             <!-- Sidebar -->
             <AdminSidebar></AdminSidebar>
 
             <!-- Main view -->
-            <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
+            <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8 overflow-auto">
 
                 <!-- Title -->
                 <div class="text-3xl font-semibold">Reservaciones</div>

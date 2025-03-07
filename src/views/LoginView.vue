@@ -1,7 +1,9 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { reactive } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const auth = useAuthStore()
 const form = reactive({
     email: '',
@@ -11,7 +13,7 @@ const form = reactive({
 const submitLogin = async () => {
     try {
         const data = await auth.login(form.email, form.password)
-        console.log(data)
+        router.push({ name: 'home' })
     } catch (error) {
         console.error(error)
     }

@@ -24,43 +24,49 @@ const router = createRouter({
             path: '/login',
             name: 'login',
             component: LoginView,
-            // meta: {guest: true}
+            meta: {guest: true}
         },
         {
             path: '/admin/bookings',
             name: 'admin-bookings',
             component: AdminBookings,
-            // meta: {requireAuth: true, role: 'admin'}
+            meta: {requireAuth: true, role: 'admin'}
         },
         {
             path: '/admin/spaces',
             name: 'admin-spaces',
-            component: AdminSpaces
+            component: AdminSpaces,
+            meta: {requireAuth: true, role: 'admin'}
         },
         {
             path: '/admin/history',
             name: 'admin-history',
-            component: AdminHistory
+            component: AdminHistory,
+            meta: {requireAuth: true, role: 'admin'}
         },
         {
             path: '/admin/register',
             name: 'admin-register',
-            component: AdminRegister
+            component: AdminRegister,
+            meta: {requireAuth: true, role: 'admin'}
         },
         {
             path: '/user/bookings',
             name: 'user-bookings',
-            component: UserBookings
+            component: UserBookings,
+            meta: {requireAuth: true, role: 'user'}
         },
         {
             path: '/user/book',
             name: 'user-book',
-            component: UserBook
+            component: UserBook,
+            meta: {requireAuth: true, role: 'user'}
         },
         {
             path: '/user/archive',
             name: 'user-archive',
-            component: UserArchive
+            component: UserArchive,
+            meta: {requireAuth: true, role: 'user'}
         },
         {
             path: '/:catchAll(.*)',
@@ -76,7 +82,7 @@ router.beforeEach(async (to, from) => {
         await auth.attempt()
     }
 
-    if(to.path === '/') {
+    if(to.path === '/' || to.path === '/admin' || to.path === '/user') {
         if(auth.isAuthenticated) {
             return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
         }
@@ -91,6 +97,10 @@ router.beforeEach(async (to, from) => {
         }
     } else if(to.meta.requireAuth && auth.isAuthenticated) {
         return {name: 'login'}
+    }
+
+    if(to.meta.guest && auth.isAuthenticated) {
+        return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
     }
 
 })

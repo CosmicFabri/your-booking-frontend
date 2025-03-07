@@ -45,6 +45,8 @@ export const useAuthStore = defineStore('auth', () => {
             if(token.value){
                 const data = await fetchData('user', 'GET')
                 user.value = data
+            } else {
+                user.value = {}
             }
         } catch (error) {
             user.value = {}

@@ -7,7 +7,7 @@ import HistoryRow from '@/components/admin/HistoryRow.vue';
 
 // Total bookings to show on pagination
 const bookings = ref([])
-const currentPage = ref(1)
+const currentPage = ref(0)
 const totalPages = ref(1)
 
 async function fetchBookings(page) {
@@ -19,8 +19,8 @@ async function fetchBookings(page) {
     }
 }
 
-watch(currentPage, async (oldPage, newPage) => {
-    await fetchBookings(newPage)
+watch(currentPage, async (newPage) => {
+    await fetchBookings(newPage + 1)
 })
 
 onMounted(async () => {

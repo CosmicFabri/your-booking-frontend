@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
+import { fetchData } from '@/utils/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
 
-// ID of the last user
-const lastUserId = ref(null)
-
+const toast = useToast();
 // For showing/hiding the 'success' modal
 // when submitting a new user to the system
 const showSuccessModal = ref(false)
@@ -20,66 +21,43 @@ const closeShowSuccessModal = () => {
 
 // Record we're gonna submit via POST
 const form = ref({
-  id: { type: Number },
   name: '',
   email: '',
   password: ''
 })
 
 const clearForm = () => {
-  form.value.id = null
   form.value.name = ''
   form.value.email = ''
   form.value.password = ''
 }
 
-const fetchUsers = async () => {
-  try {
-    const response = await fetch('http://localhost:5000/users')
-    if (!response.ok) {
-      console.log(`Response status: ${response.status}`)
-    }
-
-    const json = await response.json()
-
-    if (json.length > 0) {
-      lastUserId.value = parseInt(json[json.length - 1].id) // Get the last element's ID
-    } else {
-      lastUserId.value = null
-    }
-
-    console.log(lastUserId.value)
-  } catch (error) {
-    console.error('Error fetching users', error)
-  }
-}
-
 const handleSubmit = async () => {
   const newUser = {
-    id: String(lastUserId.value ? lastUserId.value + 1 : 1), // Ensure ID is unique
+    role_id: 2,
     name: form.value.name,
     email: form.value.email,
     password: form.value.password
   }
 
   try {
-    const response = await fetch('http://localhost:5000/users', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(newUser)
-    })
-
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`)
-    }
+    const response = await fetchData('user', 'POST', newUser)
 
     toggleShowSuccessModal()
   } catch (error) {
-    console.error(`Error submitting user with ID ${newUser.id}`, error)
+    console.log(error.code)
+    if(error.code) {
+      if(error.code == 422) {
+        toast.add({
+            severity: 'error', // 'success', 'info', 'warn', 'error'
+            summary: 'Error',
+            detail: 'Los datos proporcionados no son válidos',
+            life: 4000 // Duración en ms
+        })
+      }
+    }
   }
 }
-
-onMounted(fetchUsers)
 </script>
 
 <template>
@@ -99,21 +77,21 @@ onMounted(fetchUsers)
           <div class="flex flex-col">
             <label for="user-name" class="font-semibold text-gray-700 mb-1">Nombre del usuario:</label>
             <input v-model="form.name" type="text" id="user-name" name="user-name"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- E-mail -->
           <div class="flex flex-col">
             <label for="email" class="font-semibold text-gray-700 mb-1">Correo electrónico:</label>
             <input v-model="form.email" type="email" id="email" name="email"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- Password -->
           <div class="flex flex-col">
             <label for="pass" class="font-semibold text-gray-700 mb-1">Contraseña:</label>
             <input v-model="form.password" type="password" id="pass" name="pass"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- Submit Button -->
@@ -125,7 +103,7 @@ onMounted(fetchUsers)
       </div>
     </div>
   </div>
-
+  <Toast position="bottom-right"/>
   <!-- Success submitting booking modal -->
   <div v-if="showSuccessModal" class="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50"
     @click="closeShowSuccessModal">
@@ -133,7 +111,7 @@ onMounted(fetchUsers)
       @click.stop>
       <div class="flex flex-row items-center justify-center gap-x-4">
         <span class="pi pi-info-circle text-sky-600 font-semibold"></span>
-        <span class="text-sky-600 text-lg font-semibold">Reserva exitosa</span>
+        <span class="text-sky-600 text-lg font-semibold">Registro exitoso</span>
       </div>
       <div class="text-md text-justify">
         El usuario {{ form.name }} ha sido añadido

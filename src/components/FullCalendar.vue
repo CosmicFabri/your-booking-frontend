@@ -2,6 +2,7 @@
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import esLocale from '@fullcalendar/core/locales/es';
 
 export default {
   components: {
@@ -12,6 +13,7 @@ export default {
       calendarOptions: {
         plugins: [dayGridPlugin, interactionPlugin],
         initialView: 'dayGridMonth',
+        locale: esLocale,
         dateClick: this.handleDateClick,
         weekends: false,
       }

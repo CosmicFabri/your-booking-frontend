@@ -103,12 +103,12 @@ onMounted(fetchSpaces);
 </script>
 
 <template>
-    <div class="flex flex-row">
+    <div class="flex flex-row h-[calc(100vh-10rem)]">
         <!-- Sidebar -->
         <AdminSidebar></AdminSidebar>
 
         <!-- Main view -->
-        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
+        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8 overflow-auto">
             <!-- Title -->
             <div class="text-3xl font-semibold">Espacios</div>
 
@@ -116,8 +116,8 @@ onMounted(fetchSpaces);
             <div class="flex flex-col mx-auto relative">
                 <!-- Table header -->
                 <div class="flex flex-row bg-sky-300 text-gray-800 font-semibold border border-sky-600">
-                    <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Nombre</div>
-                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Descripción</div>
+                    <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">Nombre</div>
+                    <div class="px-4 py-3 w-60 border-r border-sky-600 text-center">Descripción</div>
                     <div class="px-4 py-3 w-32 border-r border-sky-600 text-center">Capacidad</div>
                     <div class="px-4 py-3 w-48 border-r border-sky-600 text-center">Disponibilidad</div>
                 </div>

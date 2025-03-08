@@ -28,8 +28,6 @@ onMounted(async () => {
         
         totalPages.value = response.last_page
         bookings.value = response.data
-        console.log(currentPage.value)
-        console.log(totalPages.value)
     } catch (error) {
 
     }
@@ -51,11 +49,10 @@ onMounted(async () => {
 
                 <!-- Table header -->
                 <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
-                    <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
-                    <div class="px-4 py-3 w-36 border-r border-sky-600 text-center">Espacio</div>
-                    <div class="px-4 py-3 w-72 border-r border-sky-600 text-center">Usuario</div>
-                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">Fecha</div>
-                    <div class="px-4 py-3 w-40 text-center">Horario</div>
+                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">No. Reservación</div>
+                    <div class="px-4 py-3 w-56 border-r border-sky-600 text-center">Espacio</div>
+                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Fecha</div>
+                    <div class="px-4 py-3 w-52 text-center">Horario</div>
                 </div>
 
                 <!-- Table contents -->
@@ -64,7 +61,6 @@ onMounted(async () => {
                     :key="booking.id"
                     :book-id="parseInt(booking.id)"
                     :book-space="booking.space_name"
-                    :book-user="booking.user_name"
                     :book-date="booking.day"
                     :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
                     :index="index"

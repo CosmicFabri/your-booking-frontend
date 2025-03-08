@@ -1,7 +1,11 @@
 <script setup>
-import { useAuthStore } from '@/stores/auth';
-import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth'
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast();
 
 const router = useRouter()
 const auth = useAuthStore()
@@ -16,6 +20,13 @@ const submitLogin = async () => {
         router.push({ name: 'home' })
     } catch (error) {
         console.error(error)
+
+        toast.add({
+            severity: 'error', // 'success', 'info', 'warn', 'error'
+            summary: 'Error',
+            detail: 'Credenciales incorrectas',
+            life: 4000 // Duración en ms
+        })
     }
 }
 </script>
@@ -75,5 +86,6 @@ const submitLogin = async () => {
                 </p>
             </div>
         </div>
+        <Toast position="bottom-right"/>
     </div>
 </template>

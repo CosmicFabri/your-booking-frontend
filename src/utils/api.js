@@ -29,13 +29,17 @@ async function fetchData(url, method = 'GET', body = {}) {
         const response = await fetch(`${API_BASE_URL}/${url}`, fetchOptions)
 
         if(!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const error = new Error('HTTP error');
+            error.code = response.status;
+            const json = await response.json();
+            error.message = json.message
+            throw error;
         }
 
         const data = await response.json()
         return data
 
-    } catch (error) {
+    } catch (error) { // Any other non http error
         throw error
     }
 }

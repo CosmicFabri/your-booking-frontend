@@ -13,67 +13,43 @@ const bookings = ref([])
 // Spaces retrieved
 const spaces = ref([])
 
-const disabledDates = ref([0, 6])
-
-// ID of the selected booking to edit
 const selectedBookId = ref('')
 const selectedSpace = ref(0) // Holds the id of the space
 
+/*>>>>>>>>>> start Edit modal variables */
 // For opening/closing the 'edit booking' modal
 const openEditBooking = ref(false)
 
 const showDayPicker = computed(() => selectedSpace.value !== 0) // True if a space has been selected
-const showTimeCalendar = ref(false)
+const showTimeCalendar = ref(true)
 const showSubmitButton = ref(false)
 const showSuccessModal = ref(false)
+const disabledDates = [0, 6]
 
 // Values for DayCalendar
-const selectedDay = ref([])
+const selectedDay = ref('')
 const spaceDisponibility = ref([])
 const unavailableHours = ref([])
 const selectedSchedule = ref([])
+
+// Format the Date object obtained to String date
+const selectedDayFormatted = computed(() => {
+    let string = ''   
+    if(! (selectedDay.value instanceof Date)) {
+        string = selectedDay.value
+    } else{
+        const year = selectedDay.value.getFullYear();
+        const month = (selectedDay.value.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-based
+        const day = selectedDay.value.getDate().toString().padStart(2, '0'); // getDate() for the actual day
+        string = `${year}-${month}-${day}`
+    }
+    return string
+})
 
 const getHourSelection = (start, end) => {
     selectedSchedule.value = [start, end]
     showSubmitButton.value = true
 }
-
-const handleUnselection = () => {
-    showSubmitButton.value = false
-    selectedSchedule.value = []
-}
-
-const closeShowSuccessModal = () => {
-    fetchBookings()
-    showSubmitButton.value = false
-    showTimeCalendar.value = false
-    selectedSpace.value = 0
-    showSuccessModal.value = false
-}
-
-const onDayChanged = async () => {
-    showSubmitButton.value = false
-    showTimeCalendar.value = false
-    
-    unavailableHours.value = []
-
-    console.log(selectedDay.value)
-    
-    await fetchUnavailableHours()
-
-    showTimeCalendar.value = true
-}
-
-// Format the Date object obtained to String date
-const selectedDayFormatted = computed(() => {
-    const year = selectedDay.value.getFullYear();
-    const month = (selectedDay.value.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-based
-    const day = selectedDay.value.getDate().toString().padStart(2, '0'); // getDate() for the actual day
-
-    const string = `${year}-${month}-${day}`;
-    console.log(string);
-    return string;
-})
 
 // Since we store selectedSpace as the index, a computed variable for the name is needed
 const spaceName = computed(() => {
@@ -89,20 +65,70 @@ const spacesDisponibility = computed(() => {
     },{})
 })
 
+const handleUnselection = () => {
+    showSubmitButton.value = false
+    selectedSchedule.value = []
+}
 const toggleEditModal = async (id) => {
     selectedBookId.value = id
-
     const selectedBooking = bookings.value.find(booking => booking.id === id)
     if (selectedBooking) {
         selectedDay.value = selectedBooking.day
         selectedSpace.value = selectedBooking.space_id
 
         await fetchSpaceDisponibility()
-        await fetchUnavailableHours()
+        await fetchUnavailableHours(selectedDay.value)
     }
-
     openEditBooking.value = true
+    showTimeCalendar.value = true
 }
+
+const closeEditModal = () => {
+    selectedBookId.value = null
+    showTimeCalendar.value = false
+    showSubmitButton.value = false
+    openEditBooking.value = false
+}
+
+const onSpaceChanged = () => {
+    showTimeCalendar.value = false
+    showSubmitButton.value = false
+    selectedDay.value = ''
+    selectedSchedule.value = []
+    unavailableHours.value = []
+}
+
+const onDayChanged = async () => {
+    showSubmitButton.value = false
+    showTimeCalendar.value = false 
+    unavailableHours.value = []
+    await fetchUnavailableHours(selectedDayFormatted.value)
+    showTimeCalendar.value = true
+}
+
+const closeShowSuccessModal = () => {
+    fetchBookings()
+    showSubmitButton.value = false
+    showTimeCalendar.value = false
+    selectedSpace.value = 0
+    showSuccessModal.value = false
+}
+/*>>>>>>>>>> end Edit modal variables */
+
+/*>>>>>>>>>> start Cancel modal variables */
+const openCancelModal = ref(false)
+
+const toggleCancelModal = (id) => {
+    selectedBookId.value = id
+    openCancelModal.value = true
+}
+
+const closeCancelModal = () => {
+    openCancelModal.value = false
+    selectedBookId.value = null
+}
+
+/*>>>>>>>>>> end cancel modal variables */
 
 const fetchSpaces = async () => {
     try {
@@ -121,26 +147,22 @@ const fetchSpaceDisponibility = async () => {
     }
 }
 
-const fetchUnavailableHours = async () => {
+const fetchUnavailableHours = async (day) => {
     try {
-        const repsonse = await fetchData(`bookings/hours?idSpace=${bookingSpaceId.value}&day=${selectedDay.value}`)
+        const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${day}&idBooking=${selectedBookId.value}`)
         // Converting to the event format that FullCalendar expects
         unavailableHours.value = Array.from(response, (element) => {
             return {
                 title: '',
-                start: `${selectedDay.value}T${element.start_hour}`,
-                end: `${selectedDay.value}T${element.end_hour}`
+                start: `${day}T${element.start_hour}`,
+                end: `${day}T${element.end_hour}`
             }
         })
     } catch (error) {
-
+        console.log(error)
     }
 }
 
-const closeEditModal = () => {
-    selectedBookId.value = null
-    openEditBooking.value = false
-}
 
 const fetchBookings = async () => {
     try {
@@ -153,13 +175,6 @@ const fetchBookings = async () => {
     }
 }
 
-const onSpaceChanged = () => {
-    showTimeCalendar.value = false
-    showSubmitButton.value = false
-    selectedDay.value = ''
-    selectedSchedule.value = []
-    unavailableHours.value = []
-}
 
 const handleSubmit = async () => {
     const body = {
@@ -168,10 +183,8 @@ const handleSubmit = async () => {
         start_hour: selectedSchedule.value[0],
         end_hour: selectedSchedule.value[1]
     }
-
     try {
         const response = await fetchData(`bookings/${selectedBookId.value}`, 'PATCH', body)
-
         showSuccessModal.value = true
         openEditBooking.value = false
     } catch (error) {
@@ -184,7 +197,7 @@ const handleCancellation = async (id) => {
         const response = await fetchData(`bookings/${id}`, 'DELETE')
 
         await fetchBookings()
-        closeEditModal()
+        closeCancelModal()
     } catch (error) {
         console.error(`Error cancelling booking with id ${id}`, error)
     }
@@ -194,12 +207,12 @@ onMounted(fetchBookings)
 </script>
 
 <template>
-    <div class="flex flex-row">
+    <div class="flex flex-row h-[calc(100vh-10rem)]">
         <!-- Sidebar -->
         <UserSidebar></UserSidebar>
 
         <!-- Main view -->
-        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8">
+        <div class="flex flex-col flex-1 px-16 pt-12 gap-y-8 overflow-auto">
 
             <!-- Title -->
             <div class="text-3xl font-semibold">Reservaciones</div>
@@ -207,23 +220,34 @@ onMounted(fetchBookings)
             <div class="flex flex-col mx-auto relative">
 
                 <!-- Table header -->
-                <div
-                    class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
-                    <div class="px-4 py-3 w-44 border-r border-sky-600 text-center">No. Reservación</div>
-                    <div class="px-4 py-3 w-36 border-r border-sky-600 text-center">Espacio</div>
-                    <div class="px-4 py-3 w-72 border-r border-sky-600 text-center">Usuario</div>
-                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">Fecha</div>
-                    <div class="px-4 py-3 w-40 text-center">Horario</div>
+                <div class="flex flex-row justify-center mx-auto bg-sky-300 text-gray-800 font-semibold border border-sky-600">
+                    <div class="px-4 py-3 w-40 border-r border-sky-600 text-center">No. Reservación</div>
+                    <div class="px-4 py-3 w-56 border-r border-sky-600 text-center">Espacio</div>
+                    <div class="px-4 py-3 w-52 border-r border-sky-600 text-center">Fecha</div>
+                    <div class="px-4 py-3 w-52 text-center">Horario</div>
                 </div>
-
                 <div v-for="(booking, index) in bookings" :key="booking.id" class="flex flex-row gap-x-8 relative">
-                    <BookRow :book-id="parseInt(booking.id)" :book-space="booking.space_name"
-                        :book-user="booking.user_name" :book-date="booking.day"
-                        :book-schedule="`${booking.start_hour} - ${booking.end_hour}`" :index="index" class="mx-auto" />
-                    <button v-if="booking.editable" @click="toggleEditModal(booking.id)" class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-1 px-2
-                        rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 
-                        absolute -right-12">
+                    <BookRow
+                        :book-id="parseInt(booking.id)"
+                        :book-space="booking.space_name"
+                        :book-date="booking.day"
+                        :book-schedule="`${booking.start_hour} - ${booking.end_hour}`"
+                        :index="index"
+                        class="mx-auto"
+                    />
+                    <button v-if="booking.editable"
+                        @click="toggleEditModal(booking.id)"
+                        class="bg-sky-600 hover:bg-sky-700 text-white font-medium py-1 px-2
+                            rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 
+                            absolute -right-12">
                         <i class="pi pi-pen-to-square text-white text-lg"></i>
+                    </button>
+                    <button
+                        @click="toggleCancelModal(booking.id)"
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-2
+                        rounded-lg shadow-md transition-all duration-200 flex items-center gap-2"
+                        :class="booking.editable? 'absolute -right-24': 'absolute -right-12'">
+                        <i class="pi pi-trash text-white text-lg"></i>
                     </button>
                 </div>
 
@@ -270,7 +294,7 @@ onMounted(fetchBookings)
                     <!-- Submit button -->
                     <button v-if="showSubmitButton" type="submit"
                         class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
-                        Reservar espacio
+                        Actualizar reservación
                     </button>
                 </div>
         
@@ -285,7 +309,7 @@ onMounted(fetchBookings)
                         <!-- Calendar (hours) -->
                         <div class="w-[30vw] mx-auto">
                             <!-- :key attribute forces this component to re-renderize when the value changes -->
-                            <DayCalendar @select="getHourSelection" @unselect="handleUnselection" :key="selectedDayFormatted"
+                            <DayCalendar @select="getHourSelection" @unselect="handleUnselection" :key="selectedDay"
                                 :initial-date="selectedDayFormatted" :space-disponibility="spacesDisponibility[selectedSpace]"
                                 :events="unavailableHours"></DayCalendar>
                         </div>
@@ -313,6 +337,30 @@ onMounted(fetchBookings)
                 class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
                 Aceptar
             </button>
+        </div>
+    </div>
+
+    <!-- Cancel Booking modal -->
+    <div v-if="openCancelModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" @click="closeCancelModal">
+        <div class="bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
+            <!-- Title -->
+            <div class="text-2xl font-semibold text-center mb-4">Cancelar reservación</div>
+
+            <!-- Description -->
+            <div class="text-lg text-center mb-8">¿Estás seguro que quieres cancelar esta reservación?</div>
+
+            <!-- Cancel and OK buttons -->
+            <div class="flex flex-row justify-center gap-x-12">
+                <Button
+                    @click="closeCancelModal"
+                    :text="'No cancelar'"
+                ></Button>
+                <Button
+                    @click="handleCancellation(selectedBookId)"
+                    :text="'Sí, Cancelar'"
+                    :color="'red'"
+                ></Button>               
+            </div>
         </div>
     </div>
 </template>

@@ -1,11 +1,14 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { DatePicker } from 'primevue';
 import { fetchData } from '@/utils/api';
 import UserSidebar from '@/components/user/UserSidebar.vue';
 import DayCalendar from '@/components/DayCalendar.vue';
 
 // Spaces for our select element
 const spaces = ref([])
+
+const disabledDates = ref([0, 6])
 
 // Returns an object with space.id as keys and an array of disponibility as values
 const spacesDisponibility = computed(() => {
@@ -28,6 +31,17 @@ const spaceName = computed(() => {
     return spaces.value[index].name
 })
 
+// Format the Date object obtained to String date
+const selectedDayFormatted = computed(() => {
+    const year = selectedDay.value.getFullYear();
+    const month = (selectedDay.value.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-based
+    const day = selectedDay.value.getDate().toString().padStart(2, '0'); // getDate() for the actual day
+
+    const string = `${year}-${month}-${day}`;
+    console.log(string);
+    return string;
+})
+
 const showDayPicker = computed(() => selectedSpace.value !== 0) // True if a space has been selected
 const showTimeCalendar = ref(false)
 const showSubmitButton = ref(false)
@@ -45,6 +59,8 @@ const onDayChanged = async () => {
     showTimeCalendar.value = false
     
     unavailableHours.value = []
+
+    console.log(selectedDay.value)
     
     await fetchUnavailableHours()
 
@@ -53,14 +69,14 @@ const onDayChanged = async () => {
 
 const fetchUnavailableHours = async () => {
     try {
-        const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${selectedDay.value}`)
+        const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${selectedDayFormatted.value}`)
         
         // Converting to the event format that FullCalendar expects
         unavailableHours.value = Array.from(response, (element) => {
             return {
                 title: '', 
-                start: `${selectedDay.value}T${element.start_hour}`, 
-                end: `${selectedDay.value}T${element.end_hour}`
+                start: `${selectedDayFormatted.value}T${element.start_hour}`, 
+                end: `${selectedDayFormatted.value}T${element.end_hour}`
             }
         })
     } catch (error) {
@@ -99,7 +115,7 @@ const closeShowSuccessModal = () => {
 const handleSubmit = async () => {
     const body = {
         id_space: selectedSpace.value,
-        day: selectedDay.value,
+        day: selectedDayFormatted.value,
         start_hour: selectedSchedule.value[0],
         end_hour: selectedSchedule.value[1]
     }
@@ -147,10 +163,14 @@ onMounted( async () => {
     
                             <!-- Date -->
                             <div v-if="showDayPicker" class="flex flex-row justify-between items-center gap-x-4">
-                                <label for="date" class="text-md font-semibold">Fecha:</label>
-                                <input v-model="selectedDay" @change="onDayChanged" type="date" id="date" name="date"
-                                    class="bg-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-400 focus:outline-none"
-                                    required>
+                                <label class="text-md font-semibold">Fecha:</label>
+                                <DatePicker
+                                    v-model="selectedDay" 
+                                    @update:modelValue="onDayChanged" 
+                                    :min-date="new Date()" 
+                                    :disabled-days="disabledDates"
+                                    :manual-input="false"
+                                />
                             </div>
                         </div>
 
@@ -175,8 +195,8 @@ onMounted( async () => {
                                 <DayCalendar 
                                     @select="getHourSelection"
                                     @unselect="handleUnselection"
-                                    :key="selectedDay"
-                                    :initial-date="selectedDay"
+                                    :key="selectedDayFormatted"
+                                    :initial-date="selectedDayFormatted"
                                     :space-disponibility="spacesDisponibility[selectedSpace]"
                                     :events="unavailableHours"></DayCalendar>
                             </div>
@@ -198,7 +218,7 @@ onMounted( async () => {
             </div>
             <div class="text-md text-justify">
                 Su reservación en el espacio {{ spaceName }} a las
-                {{ selectedSchedule[0] }} horas con fecha {{ selectedDay }}
+                {{ selectedSchedule[0] }} horas con fecha {{ selectedDayFormatted }}
                 ha sido agregada exitosamente.
             </div>
             <button @click="closeShowSuccessModal"

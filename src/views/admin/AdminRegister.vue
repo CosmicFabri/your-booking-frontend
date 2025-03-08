@@ -2,7 +2,10 @@
 import { ref } from 'vue';
 import { fetchData } from '@/utils/api';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
 
+const toast = useToast();
 // For showing/hiding the 'success' modal
 // when submitting a new user to the system
 const showSuccessModal = ref(false)
@@ -42,7 +45,17 @@ const handleSubmit = async () => {
 
     toggleShowSuccessModal()
   } catch (error) {
-    console.error('Error submitting user ', error)
+    console.log(error.code)
+    if(error.code) {
+      if(error.code == 422) {
+        toast.add({
+            severity: 'error', // 'success', 'info', 'warn', 'error'
+            summary: 'Error',
+            detail: 'Los datos proporcionados no son válidos',
+            life: 4000 // Duración en ms
+        })
+      }
+    }
   }
 }
 </script>
@@ -64,21 +77,21 @@ const handleSubmit = async () => {
           <div class="flex flex-col">
             <label for="user-name" class="font-semibold text-gray-700 mb-1">Nombre del usuario:</label>
             <input v-model="form.name" type="text" id="user-name" name="user-name"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- E-mail -->
           <div class="flex flex-col">
             <label for="email" class="font-semibold text-gray-700 mb-1">Correo electrónico:</label>
             <input v-model="form.email" type="email" id="email" name="email"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- Password -->
           <div class="flex flex-col">
             <label for="pass" class="font-semibold text-gray-700 mb-1">Contraseña:</label>
             <input v-model="form.password" type="password" id="pass" name="pass"
-              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" />
+              class="border rounded-lg p-2 focus:ring-2 focus:ring-blue-400 outline-none" required/>
           </div>
 
           <!-- Submit Button -->
@@ -90,7 +103,7 @@ const handleSubmit = async () => {
       </div>
     </div>
   </div>
-
+  <Toast position="bottom-right"/>
   <!-- Success submitting booking modal -->
   <div v-if="showSuccessModal" class="fixed z-10 inset-0 flex items-center justify-center bg-black bg-opacity-50"
     @click="closeShowSuccessModal">

@@ -115,6 +115,20 @@ const closeShowSuccessModal = () => {
 }
 /*>>>>>>>>>> end Edit modal variables */
 
+/*>>>>>>>>>> start Cancel modal variables */
+const openCancelModal = ref(false)
+
+const toggleCancelModal = (id) => {
+    selectedBookId.value = id
+    openCancelModal.value = true
+}
+
+const closeCancelModal = () => {
+    openCancelModal.value = false
+    selectedBookId.value = null
+}
+
+/*>>>>>>>>>> end cancel modal variables */
 
 const fetchSpaces = async () => {
     try {
@@ -183,7 +197,7 @@ const handleCancellation = async (id) => {
         const response = await fetchData(`bookings/${id}`, 'DELETE')
 
         await fetchBookings()
-        closeEditModal()
+        closeCancelModal()
     } catch (error) {
         console.error(`Error cancelling booking with id ${id}`, error)
     }
@@ -227,6 +241,13 @@ onMounted(fetchBookings)
                             rounded-lg shadow-md transition-all duration-200 flex items-center gap-2 
                             absolute -right-12">
                         <i class="pi pi-pen-to-square text-white text-lg"></i>
+                    </button>
+                    <button
+                        @click="toggleCancelModal(booking.id)"
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium py-1 px-2
+                        rounded-lg shadow-md transition-all duration-200 flex items-center gap-2"
+                        :class="booking.editable? 'absolute -right-24': 'absolute -right-12'">
+                        <i class="pi pi-trash text-white text-lg"></i>
                     </button>
                 </div>
 
@@ -316,6 +337,30 @@ onMounted(fetchBookings)
                 class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition-all duration-200">
                 Aceptar
             </button>
+        </div>
+    </div>
+
+    <!-- Cancel Booking modal -->
+    <div v-if="openCancelModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" @click="closeCancelModal">
+        <div class="bg-white rounded-lg shadow-lg px-8 py-6 w-96 relative" @click.stop>
+            <!-- Title -->
+            <div class="text-2xl font-semibold text-center mb-4">Cancelar reservación</div>
+
+            <!-- Description -->
+            <div class="text-lg text-center mb-8">¿Estás seguro que quieres cancelar esta reservación?</div>
+
+            <!-- Cancel and OK buttons -->
+            <div class="flex flex-row justify-center gap-x-12">
+                <Button
+                    @click="closeCancelModal"
+                    :text="'No cancelar'"
+                ></Button>
+                <Button
+                    @click="handleCancellation(selectedBookId)"
+                    :text="'Sí, Cancelar'"
+                    :color="'red'"
+                ></Button>               
+            </div>
         </div>
     </div>
 </template>

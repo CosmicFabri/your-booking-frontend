@@ -28,8 +28,6 @@ onMounted(async () => {
         
         totalPages.value = response.last_page
         bookings.value = response.data
-        console.log(currentPage.value)
-        console.log(totalPages.value)
     } catch (error) {
 
     }

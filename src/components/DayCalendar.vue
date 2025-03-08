@@ -34,11 +34,11 @@ export default {
                 initialDate: this.initialDate,
                 dateClick: this.handleDateClick,
                 select: this.handleSelect,
-                unselect: this.handleUnselct,
+                unselect: this.handleUnselect,
                 weekends: false,
                 headerToolbar: false,
                 allDaySlot: false,
-                slotMinTime: this.spaceDisponibility[0],
+                // slotMinTime: this.minSlotTime,
                 slotMaxTime: this.spaceDisponibility[1],
                 slotDuration: '01:00:00',
                 slotEventOverlap: false,
@@ -62,13 +62,35 @@ export default {
             this.$emit('unselect')
         }
     },
+    computed: {
+        minSlotTime() {
+            const todayDate = new Date()
+            const year = todayDate.getFullYear()
+            const month = (todayDate.getMonth() + 1).toString().padStart(2, '0')
+            const day = todayDate.getDate().toString().padStart(2, '0')
+            const hours = todayDate.getHours().toString().padStart(2, '0')
+            const today = `${year}-${month}-${day}`
+
+            let minTime = this.spaceDisponibility[0]
+
+            if (this.initialDate === today) {
+                const currentTime = `${hours}:00:00`
+                minTime = currentTime > minTime ? currentTime : minTime
+            }
+
+            return minTime > this.spaceDisponibility[1] ? this.spaceDisponibility[1] : minTime
+        }
+    },
     watch: {
         // Observa el cambio en initialDate y actualiza la opción de fecha
         initialDate(newDate) {
-            this.calendarOptions.initialDate = newDate;
+            this.calendarOptions.initialDate = newDate
         }
     },
-    emits: ['dateClick', 'select', 'unselect']
+    emits: ['dateClick', 'select', 'unselect'],
+    mounted() {
+        this.calendarOptions.slotMinTime = this.minSlotTime
+    }
 }
 </script>
 

@@ -20,7 +20,6 @@ const submitLogin = async () => {
         const data = await auth.login(form.email, form.password)
         router.push({ name: 'home' })
     } catch (error) {
-        console.error(error)
 
         toast.add({
             severity: 'error', // 'success', 'info', 'warn', 'error'

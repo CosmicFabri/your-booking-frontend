@@ -72,7 +72,7 @@ const googleLogin = async (token) => {
                         </div>
                     </div>
                 </form>
-                <GoogleLoginButton
+                <GoogleLoginButton class="mt-4"
                     @success='googleLogin' />
             </div>
 

@@ -4,6 +4,7 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
+import GoogleLoginButton from '@/components/GoogleLoginButton.vue'
 
 const toast = useToast();
 
@@ -29,6 +30,11 @@ const submitLogin = async () => {
         })
     }
 }
+
+const googleLogin = async (token) => {
+    console.log(token)
+}
+
 </script>
 
 <template>
@@ -63,9 +69,12 @@ const submitLogin = async () => {
                                 class="bg-sky-600 text-white hover:bg-sky-500 px-6 py-2 rounded-lg font-bold shadow-md transition duration-300">
                                 Iniciar sesión
                             </button>
+                            
                         </div>
                     </div>
                 </form>
+                <GoogleLoginButton
+                    @success='googleLogin' />
             </div>
 
             <!-- Engineering Faculty logo & Description -->

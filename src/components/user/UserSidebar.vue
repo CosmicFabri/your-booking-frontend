@@ -34,7 +34,7 @@ const isActiveLink = (routePath) => {
             <RouterLink :class="[isActiveLink('/user/book') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
                 'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/book">Reservar</RouterLink>
             <RouterLink :class="[isActiveLink('/user/archive') ? 'bg-gray-300 font-semibold' : 'hover:bg-gray-300',
-                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/archive">Archivo</RouterLink>
+                'hover:rounded-xl px-4 py-2 rounded-xl']" to="/user/archive?page=1">Archivo</RouterLink>
         </div>
         <div class="p-4">
             <Button

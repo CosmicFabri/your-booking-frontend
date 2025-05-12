@@ -84,7 +84,7 @@ router.beforeEach(async (to, from) => {
 
     if(to.path === '/' || to.path === '/admin' || to.path === '/user') {
         if(auth.isAuthenticated) {
-            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
         }
         else {
             return {name: 'login'}
@@ -93,14 +93,14 @@ router.beforeEach(async (to, from) => {
 
     if(to.meta.requireAuth && auth.isAuthenticated) {
         if(to.meta.role && to.meta.role !== auth.user.role) { // If user tries to acces a route different from their role
-            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
         }
     } else if(to.meta.requireAuth && !auth.isAuthenticated) {
         return {name: 'login'}
     }
 
     if(to.meta.guest && auth.isAuthenticated) {
-        return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+        return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
     }
 
 })

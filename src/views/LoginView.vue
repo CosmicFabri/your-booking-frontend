@@ -31,7 +31,21 @@ const submitLogin = async () => {
 }
 
 const googleLogin = async (token) => {
-    console.log(token)
+    try {
+        console.log(token)
+        const data = await auth.loginGoogle(token)
+        router.push({ name: 'home' })
+    } catch (error) {
+        if (error.code == 404) {
+            toast.add({
+                severity: 'error', // 'success', 'info', 'warn', 'error'
+                summary: 'Error',
+                detail: 'Este correo no está registrado',
+                life: 4000 // Duración en ms
+            })
+        }
+        console.error(error)
+    }
 }
 
 </script>

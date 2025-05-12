@@ -220,7 +220,7 @@ const handleSubmit = async () => {
         end_hour: selectedSchedule.value[1]
     }
     try {
-        const response = await fetchData(`bookings/${selectedBooking.value.id}`, 'PATCH', body)
+        const response = await fetchData(`bookings/${selectedBooking.value.id}`, 'PUT', body)
         showSuccessModal.value = true
         openEditBooking.value = false
     } catch (error) {

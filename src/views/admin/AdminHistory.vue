@@ -2,8 +2,12 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { Paginator } from 'primevue';
 import { fetchData } from '@/utils/api';
+import { useRoute, useRouter } from 'vue-router';
 import AdminSidebar from '@/components/admin/AdminSidebar.vue';
 import HistoryRow from '@/components/admin/HistoryRow.vue';
+
+const route = useRoute()
+const router = useRouter()
 
 // Total bookings to show on pagination
 const bookings = ref([])
@@ -12,24 +16,32 @@ const totalPages = ref(1)
 
 async function fetchBookings(page) {
     try {
+
         const response = await fetchData(`bookings?page=${page}`, 'GET')
-        bookings.value = response.data
+        totalPages.value = response.page.totalPages
+        bookings.value = response.content
     } catch (error) {
 
     }
 }
 
 watch(currentPage, async (newPage) => {
-    await fetchBookings(newPage + 1)
+    await fetchBookings(newPage)
+    router.replace({ query: { ...route.query, page:`${newPage + 1}` } })
 })
 
 onMounted(async () => {
+    const currentQuery = { ...route.query }
+
+    // Si no hay "page" en la query, lo pones por defecto
+    if (!currentQuery.page) {
+        currentQuery.page = '1'
+        router.replace({ query: currentQuery }) // Esto actualiza la URL sin recargar
+    }
     try {
-        const response = await fetchData('bookings?page=1', 'GET')
-
-        totalPages.value = response.last_page
-        bookings.value = response.data
-
+        const page = currentQuery.page - 1
+        currentPage.value = page
+        await fetchBookings(parseInt(page))
     } catch (error) {
 
     }

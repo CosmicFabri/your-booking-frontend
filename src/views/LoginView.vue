@@ -4,6 +4,7 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
+import GoogleLoginButton from '@/components/GoogleLoginButton.vue'
 
 const toast = useToast();
 
@@ -19,7 +20,6 @@ const submitLogin = async () => {
         const data = await auth.login(form.email, form.password)
         router.push({ name: 'home' })
     } catch (error) {
-        console.error(error)
 
         toast.add({
             severity: 'error', // 'success', 'info', 'warn', 'error'
@@ -29,6 +29,25 @@ const submitLogin = async () => {
         })
     }
 }
+
+const googleLogin = async (token) => {
+    try {
+        console.log(token)
+        const data = await auth.loginGoogle(token)
+        router.push({ name: 'home' })
+    } catch (error) {
+        if (error.code == 404) {
+            toast.add({
+                severity: 'error', // 'success', 'info', 'warn', 'error'
+                summary: 'Error',
+                detail: 'Este correo no está registrado',
+                life: 4000 // Duración en ms
+            })
+        }
+        console.error(error)
+    }
+}
+
 </script>
 
 <template>
@@ -63,9 +82,12 @@ const submitLogin = async () => {
                                 class="bg-sky-600 text-white hover:bg-sky-500 px-6 py-2 rounded-lg font-bold shadow-md transition duration-300">
                                 Iniciar sesión
                             </button>
+                            
                         </div>
                     </div>
                 </form>
+                <GoogleLoginButton class="mt-4"
+                    @success='googleLogin' />
             </div>
 
             <!-- Engineering Faculty logo & Description -->

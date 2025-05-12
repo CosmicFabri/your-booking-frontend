@@ -125,7 +125,7 @@ const handleSubmit = async () => {
 
         showSuccessModal.value = true
     } catch (error) {
-        
+        console.log(error)
     }
 }
 

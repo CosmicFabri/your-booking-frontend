@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', () => {
     const login = async (email, password) => {
         try {
             const body = {email, password}
-            const data = await fetchData('login', 'POST', body)
+            const data = await fetchData('auth/login', 'POST', body)
 
             token.value = data.token
             user.value = data.user
@@ -25,9 +25,24 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    const loginGoogle = async (tokenGoogle) => {
+        try {
+            const body = {token: tokenGoogle}
+            const data = await fetchData('auth/login/google', 'POST', body)
+
+            token.value = data.token
+            user.value = data.user
+            console.log(data.user)
+
+            localStorage.setItem('token', data.token)
+        } catch(error) {
+            throw error
+        }
+    }
+
     const logout = async () => {
         try {
-            const data = await fetchData('logout', 'POST')
+            const data = await fetchData('auth/logout', 'POST')
 
             token.value = null
             user.value = null
@@ -64,6 +79,7 @@ export const useAuthStore = defineStore('auth', () => {
         isAuthResolved,
         attempt,
         login,
+        loginGoogle,
         logout
     }
 })

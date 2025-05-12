@@ -10,8 +10,6 @@ const UserBookings = () => import("@/views/user/UserBookings.vue");
 const UserBook = () => import("@/views/user/UserBook.vue");
 const UserArchive = () => import("@/views/user/UserArchive.vue");
 const NotFoundView = () => import("@/views/NotFoundView.vue");
-const BookingsCalendar = () => import("@/components/user/BookingsCalendar.vue");
-const BookingsTable = () => import("@/components/user/BookingsTable.vue");
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -56,10 +54,6 @@ const router = createRouter({
             path: '/user/bookings',
             name: 'user-bookings',
             component: UserBookings,
-            children: [
-                {name: 'user-bookings-table', path: '', component: BookingsTable},
-                {name: 'user-bookings-calendar', path: 'calendar', component: BookingsCalendar}
-            ],
             meta: {requireAuth: true, role: 'user'}
         },
         {
@@ -90,7 +84,7 @@ router.beforeEach(async (to, from) => {
 
     if(to.path === '/' || to.path === '/admin' || to.path === '/user') {
         if(auth.isAuthenticated) {
-            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
         }
         else {
             return {name: 'login'}
@@ -99,14 +93,14 @@ router.beforeEach(async (to, from) => {
 
     if(to.meta.requireAuth && auth.isAuthenticated) {
         if(to.meta.role && to.meta.role !== auth.user.role) { // If user tries to acces a route different from their role
-            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+            return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
         }
     } else if(to.meta.requireAuth && !auth.isAuthenticated) {
         return {name: 'login'}
     }
 
     if(to.meta.guest && auth.isAuthenticated) {
-        return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings-table'}
+        return {name: auth.isAdmin ? 'admin-bookings' : 'user-bookings'}
     }
 
 })

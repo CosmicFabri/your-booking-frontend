@@ -93,6 +93,7 @@ const toggleEditModal = async (index) => {
 }
 
 const closeEditModal = () => {
+    selectedBooking.value = null
     showTimeCalendar.value = false
     showSubmitButton.value = false
     openEditBooking.value = false
@@ -198,6 +199,7 @@ const fetchSpaceDisponibility = async () => {
 
 const fetchUnavailableHours = async (day) => {
     try {
+        console.log(selectedBooking.value.id)
         const response = await fetchData(`bookings/hours?idSpace=${selectedSpace.value}&day=${day}&idBooking=${selectedBooking.value.id}`)
         // Converting to the event format that FullCalendar expects
         unavailableHours.value = Array.from(response, (element) => {

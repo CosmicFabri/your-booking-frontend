@@ -65,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
             }
         } catch (error) {
             user.value = {}
+            token.value = null
             localStorage.removeItem('token') // Helps when token no longer exists in database
         } finally {
             isAuthResolved.value = true

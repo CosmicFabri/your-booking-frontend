@@ -34,7 +34,6 @@ const clearForm = () => {
 
 const handleSubmit = async () => {
   const newUser = {
-    role_id: 2,
     name: form.value.name,
     email: form.value.email,
     password: form.value.password
@@ -45,7 +44,7 @@ const handleSubmit = async () => {
 
     toggleShowSuccessModal()
   } catch (error) {
-    console.log(error.code)
+    console.log(error)
     if(error.code) {
       if(error.code == 422) {
         toast.add({

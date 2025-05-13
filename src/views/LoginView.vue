@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import Toast from 'primevue/toast'
+import Button from '@/components/Button.vue'
 import { useToast } from 'primevue/usetoast'
 import GoogleLoginButton from '@/components/GoogleLoginButton.vue'
 
@@ -106,6 +107,9 @@ const googleLogin = async (token) => {
                     Facultad de Ingeniería fácilmente. Gestiona tus reservaciones y horarios de forma cómoda y edítalos cuando
                     quieras, hasta 24 horas antes de la fecha.
                 </p>
+                <Button
+                    text="Consultar prácticas"
+                    @click="() => router.push({name: 'practices'})"></Button>
             </div>
         </div>
         <Toast position="bottom-right"/>

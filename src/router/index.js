@@ -10,6 +10,7 @@ const UserBookings = () => import("@/views/user/UserBookings.vue");
 const UserBook = () => import("@/views/user/UserBook.vue");
 const UserArchive = () => import("@/views/user/UserArchive.vue");
 const NotFoundView = () => import("@/views/NotFoundView.vue");
+const Practices = () => import("@/views/Practices.vue")
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -67,6 +68,11 @@ const router = createRouter({
             name: 'user-archive',
             component: UserArchive,
             meta: {requireAuth: true, role: 'user'}
+        },
+        {
+            path: '/practices',
+            name: 'practices',
+            component: Practices
         },
         {
             path: '/:catchAll(.*)',

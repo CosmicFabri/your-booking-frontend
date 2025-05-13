@@ -11,6 +11,7 @@ const UserBook = () => import("@/views/user/UserBook.vue");
 const UserArchive = () => import("@/views/user/UserArchive.vue");
 const NotFoundView = () => import("@/views/NotFoundView.vue");
 const Practices = () => import("@/views/Practices.vue")
+const UserPractices = () => import("@/views/user/UserPractices.vue")
 
 const router = createRouter({
     // Go back and forth between pages, like a server-rendered app
@@ -50,6 +51,12 @@ const router = createRouter({
             name: 'admin-register',
             component: AdminRegister,
             meta: {requireAuth: true, role: 'admin'}
+        },
+        {
+            path: '/user/practices',
+            name: 'user-practices',
+            component: UserPractices,
+            meta: {requireAuth: true, role: 'user'}
         },
         {
             path: '/user/bookings',

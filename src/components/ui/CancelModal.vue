@@ -11,6 +11,11 @@ const props = defineProps({
     description: {
         type: String,
         required: true
+    },
+    action: {
+        type:String,
+        required: false,
+        default: "cancelar"
     }
 })
 
@@ -32,11 +37,11 @@ const cancel = () => emit('cancel')
             <div class="flex flex-row justify-center gap-x-12">
                 <Button
                     @click="close"
-                    :text="'No cancelar'"
+                    :text="'No'"
                 ></Button>
                 <Button
                     @click="cancel"
-                    :text="'Sí, Cancelar'"
+                    :text="`Sí, ${action}`"
                     :color="'red'"
                 ></Button>               
             </div>

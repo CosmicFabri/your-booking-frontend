@@ -30,11 +30,7 @@ const fetchSubjects = async (idProgram) => {
 const download = async (fileName) => {
     try {
         const response = await fetch(`${API_BASE_URL}/file/${fileName}`, {
-            method: 'GET',
-            headers: {
-                // Si necesitas autenticar, pon aquí los headers
-                // 'Authorization': `Bearer ${token}`
-            }
+            method: 'GET'
         });
 
         if (!response.ok) {
@@ -92,9 +88,9 @@ onMounted(async () => {
                     :value="index">
                     <AccordionHeader>{{ subject.name }}</AccordionHeader>
                     <AccordionContent>
-                        <p v-for="(practice, index) in subject.practices" :key="practice.id"> {{ practice.name }} <span class="ml-4"></span>
-                            <button v-if="practice.file_name != null" @click="download(practice.file_name)">Descargar Práctica</button>
-                        </p>
+                        <div v-for="practice in subject.practices" :key="practice.id" :v-if="practice.file_name != null">
+                            <button v-if="practice.file_name != null" @click="download(practice.file_name)">{{ practice.name }}</button>
+                        </div>
                     </AccordionContent>
                 </AccordionPanel>
             </Accordion>
